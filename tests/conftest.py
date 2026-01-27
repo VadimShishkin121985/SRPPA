@@ -6,19 +6,39 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BASE_URL = os.getenv("BASE_URL", "https://www.searates.com/")
-@pytest.fixture
-def page():
+# @pytest.fixture
+# def page():
+#     with sync_playwright() as pw:
+#         browser = pw.chromium.launch(headless=True)
+#         context = browser.new_context(
+#             viewport={"width": 1700, "height": 1080},
+#             accept_downloads=True,
+#             permissions = ["clipboard-read", "clipboard-write"]
+#         )
+#         page = context.new_page()
+#         page.goto(BASE_URL)
+#
+#         yield page
+#
+#         context.close()
+#         browser.close()
+
+@pytest.fixture(scope="class")
+def setup_class_page(request):
+    """
+    Fixture для тестового класса.
+    Создаёт браузер один раз на класс и передаёт self.page.
+    """
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
-        context = browser.new_context(
-            viewport={"width": 1700, "height": 1080},
-            accept_downloads=True,
-            permissions = ["clipboard-read", "clipboard-write"]
-        )
+        context = browser.new_context()
         page = context.new_page()
         page.goto(BASE_URL)
 
-        yield page
+        # Привязываем page к классу
+        request.cls.page = page
 
-        context.close()
+        yield
+
+        # закрываем браузер после всех тестов класса
         browser.close()
