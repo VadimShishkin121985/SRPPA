@@ -39,7 +39,8 @@ class Test_Tracking:
         self.sign_in_page.sign_in_form()
 
     def test_go_to_ct_app(self):
-        self.test_sign_in(self.page)
+        # используем self.page через fixture, не передаём в тест
+        self.test_sign_in()  # теперь без аргумента
         self.main_page.go_to_container_tracking_app()
 
     def test_go_to_ct_from_filter_303169537(self):
