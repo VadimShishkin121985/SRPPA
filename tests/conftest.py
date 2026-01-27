@@ -9,7 +9,7 @@ BASE_URL = os.getenv("BASE_URL", "https://www.searates.com/")
 @pytest.fixture
 def page():
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(headless=False)
+        browser = pw.chromium.launch(headless=True)
         context = browser.new_context(
             viewport={"width": 1700, "height": 1080},
             accept_downloads=True,
