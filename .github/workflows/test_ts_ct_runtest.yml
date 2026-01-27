@@ -1,0 +1,174 @@
+name: Test Container TS
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Select test suite'
+        required: true
+        type: choice
+        options:
+          - Tracking
+        default: Tracking
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+# =========================================================
+# 🧪 TEST JOB
+# =========================================================
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest-rerunfailures webdriver-manager lxml
+
+      # Подготовка истории (даже пустой)
+      - name: Prepare allure history folder
+        run: mkdir -p allure-results/history
+
+      # Скачиваем прошлую историю (если есть)
+      - name: Download Allure history
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-history
+          path: allure-results/history
+        continue-on-error: true
+
+      - name: Run tests
+        run: |
+          mkdir -p allure-results
+          
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ github.event.inputs.test_suite }}" == "Regression" ]]; then
+              TEST_FILE="tests/test_tracking.py"
+            else
+              TEST_FILE="tests/tests.py"
+            fi
+          else
+            TEST_FILE="tests/test_tracking.py"
+          fi
+
+          echo "Running tests from: $TEST_FILE"
+          pytest $TEST_FILE \
+            --reruns=1 \
+            --reruns-delay=3 \
+            --disable-warnings \
+            -v \
+            --alluredir=allure-results \
+            --junitxml=allure-results/junit.xml || true
+
+      # Сохраняем историю и результаты
+      - name: Upload Allure history
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-history
+          path: allure-results/history
+          retention-days: 10
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+
+# =========================================================
+# 📊 REPORT + TELEGRAM
+# =========================================================
+  report:
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: 17
+
+      # Установка xmllint для анализа junit
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      - name: Install Allure
+        run: |
+          wget https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0.tgz
+          tar -xzf allure-2.25.0.tgz
+          sudo mv allure-2.25.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+
+      - name: Generate Allure report
+        run: |
+          allure generate allure-results -o _site --clean
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      # ================= Telegram уведомление =================
+      - name: Send Telegram report
+        if: always()
+        run: |
+          JUNIT_FILE="allure-results/junit.xml"
+          if [ -f "$JUNIT_FILE" ]; then
+            TOTAL=$(xmllint --xpath "count(//testcase)" "$JUNIT_FILE")
+            FAILED=$(xmllint --xpath "count(//testcase[failure or error])" "$JUNIT_FILE")
+            SKIPPED=$(xmllint --xpath "count(//testcase[skipped])" "$JUNIT_FILE")
+            PASSED=$((TOTAL - FAILED - SKIPPED))
+            PASS_RATE=$(awk "BEGIN { printf \"%.2f\", ($PASSED/$TOTAL)*100 }")
+          else
+            TOTAL=0; PASSED=0; FAILED=0; SKIPPED=0; PASS_RATE=0
+          fi
+
+          MESSAGE="📊 *Test Report Company*
+          Total Tests: $TOTAL
+          ✅ Passed: $PASSED
+          ❌ Failed: $FAILED
+          ⏭️ Skipped: $SKIPPED
+          📈 Pass Rate: ${PASS_RATE}%
+          🔗 [View Report](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_SRA_ID}" \
+            -d text="$MESSAGE" \
+            -d parse_mode="Markdown"
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
+
+# =========================================================
+# 🚀 PUBLISH TO GITHUB PAGES
+# =========================================================
+  publish:
+    needs: report
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
