@@ -20,7 +20,7 @@ permissions:
   id-token: write
 
 env:
-  CI: true  # Важный флаг для Playwright
+  CI: true  # Важно для Playwright headless
 
 jobs:
 # =========================================================
@@ -43,6 +43,7 @@ jobs:
           pip install -r requirements.txt
           pip install pytest-rerunfailures webdriver-manager lxml
           pip install playwright allure-pytest
+
       - name: Install Playwright browsers
         run: playwright install --with-deps
 
@@ -62,18 +63,20 @@ jobs:
       - name: Ensure allure-results folder exists
         run: mkdir -p allure-results
 
-      # Запуск тестов
+      # ================= Запуск тестов =================
       - name: Run tests
         run: |
-            if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-              if [[ "${{ github.event.inputs.test_suite }}" == "Regression" ]]; then
-                TEST_FILE="tests/test_regression.py"
-              else
-                TEST_FILE="tests/test_tracking.py"
-              fi
+          echo "Selected test suite: ${{ github.event.inputs.test_suite }}"
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ github.event.inputs.test_suite }}" == "Regression" ]]; then
+              TEST_FILE="tests/test_regression.py"
             else
               TEST_FILE="tests/test_tracking.py"
             fi
+          else
+            TEST_FILE="tests/test_tracking.py"
+          fi
 
           echo "Running tests from: $TEST_FILE"
           pytest $TEST_FILE \
