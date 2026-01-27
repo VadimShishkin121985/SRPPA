@@ -9,8 +9,8 @@ import shutil
 
 
 class ContainerTracking(BasePage, LocatorsPage):
-    def __init__(self, page):
-        super().__init__(page)
+    # def __init__(self, page):
+    #     super().__init__(page)
 
     # def update_button_click(self):
     #     update_button = self.page.locator("button:has-text('update')").first
