@@ -84,6 +84,9 @@ jobs:
             -v \
             --alluredir=allure-results \
             --junitxml=allure-results/junit.xml || true
+        env:
+          TEST_ACCOUNT_LOGIN: ${{ secrets.TEST_ACCOUNT_LOGIN }}
+          TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
 
       # Проверяем, что результаты созданы
       - name: List allure-results content
