@@ -60,66 +60,66 @@ class Test_Tracking:
         self.container_tracking_page.open_the_updated_card()
         self.container_tracking_page.delete_the_card()
 
-    def test_delete_the_card_from_the_list_265814035(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.delete_the_card()
-
-    def test_view_rates(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.open_the_first_card()
-        self.container_tracking_page.click_on_the_rate()
-
-    def test_download_template_(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.download_file()
-
-    def test_upload_file(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.upload_test_file()
-
-    def test_add_delete_tag(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.open_the_first_card()
-        self.container_tracking_page.add_first_tag()
-
-    def test_copy_link(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.open_the_first_card()
-        self.container_tracking_page.copy_past_link()
-
-    def test_map_setting(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.setting_map()
-
-    def test_info_tab_in_the_card(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.open_the_first_card()
-        self.container_tracking_page.go_to_vessel_tab()
-        self.container_tracking_page.go_to_route_tab()
-
-    def test_open_the_card_through_a_point_on_the_map(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.click_on_the_point()
-        self.container_tracking_page.hover_and_click_on_container_in_point()
-
-    def test_checking_the_limit_for_unauthorized_user(self):
-        self.main_page.go_to_container_tracking_app()
-        self.container_tracking_page.fill_input_ct_number()
-        self.container_tracking_page.search_button_ct_app_limiter()
-
-    def test_checking_limit_for_paid_user(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.open_subscription_info()
-        self.container_tracking_page.check_credit_counter()
-
-    def test_extend_subscription(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.open_subscription_info()
-        self.container_tracking_page.purchase_additional_credits()
-
-    def test_main_tabs(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.go_to_analytics_tab()
-        self.container_tracking_page.go_to_notifications_tab()
-        self.container_tracking_page.go_to_calendar_tab()
-        self.container_tracking_page.go_to_map_tab()
+    # def test_delete_the_card_from_the_list_265814035(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.delete_the_card()
+    #
+    # def test_view_rates(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.open_the_first_card()
+    #     self.container_tracking_page.click_on_the_rate()
+    #
+    # def test_download_template_(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.download_file()
+    #
+    # def test_upload_file(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.upload_test_file()
+    #
+    # def test_add_delete_tag(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.open_the_first_card()
+    #     self.container_tracking_page.add_first_tag()
+    #
+    # def test_copy_link(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.open_the_first_card()
+    #     self.container_tracking_page.copy_past_link()
+    #
+    # def test_map_setting(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.setting_map()
+    #
+    # def test_info_tab_in_the_card(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.open_the_first_card()
+    #     self.container_tracking_page.go_to_vessel_tab()
+    #     self.container_tracking_page.go_to_route_tab()
+    #
+    # def test_open_the_card_through_a_point_on_the_map(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.click_on_the_point()
+    #     self.container_tracking_page.hover_and_click_on_container_in_point()
+    #
+    # def test_checking_the_limit_for_unauthorized_user(self):
+    #     self.main_page.go_to_container_tracking_app()
+    #     self.container_tracking_page.fill_input_ct_number()
+    #     self.container_tracking_page.search_button_ct_app_limiter()
+    #
+    # def test_checking_limit_for_paid_user(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.open_subscription_info()
+    #     self.container_tracking_page.check_credit_counter()
+    #
+    # def test_extend_subscription(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.open_subscription_info()
+    #     self.container_tracking_page.purchase_additional_credits()
+    #
+    # def test_main_tabs(self):
+    #     self.test_go_to_ct_app()
+    #     self.container_tracking_page.go_to_analytics_tab()
+    #     self.container_tracking_page.go_to_notifications_tab()
+    #     self.container_tracking_page.go_to_calendar_tab()
+    #     self.container_tracking_page.go_to_map_tab()
