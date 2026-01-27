@@ -80,8 +80,6 @@ jobs:
 
           echo "Running tests from: $TEST_FILE"
           pytest $TEST_FILE \
-            --reruns=1 \
-            --reruns-delay=3 \
             --disable-warnings \
             -v \
             --alluredir=allure-results \
