@@ -23,11 +23,12 @@ BASE_URL = os.getenv("BASE_URL", "https://www.searates.com/")
 #         context.close()
 #         browser.close()
 
-@pytest.fixture(scope="class")
-def setup_class_page(request):
+@pytest.fixture(scope="function", autouse=True)
+def setup_page(request):
     """
-    Fixture для тестового класса.
-    Создаёт браузер один раз на класс и передаёт self.page.
+    Fixture для каждого теста:
+    - открывает новый браузер и страницу перед тестом
+    - закрывает браузер после теста
     """
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=True)
@@ -35,10 +36,12 @@ def setup_class_page(request):
         page = context.new_page()
         page.goto(BASE_URL)
 
-        # Привязываем page к классу
-        request.cls.page = page
+        # Привязываем page к классу (request.cls) и к тесту (request.instance)
+        if hasattr(request, "cls"):
+            request.cls.page = page
 
-        yield
+        yield page  # тест получает page как аргумент
 
-        # закрываем браузер после всех тестов класса
+        # Закрываем контекст и браузер после теста
+        context.close()
         browser.close()
