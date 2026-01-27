@@ -11,12 +11,16 @@ on:
         type: choice
         options:
           - Tracking
+          - Regression
         default: Tracking
 
 permissions:
   contents: read
   pages: write
   id-token: write
+
+env:
+  CI: true  # Важный флаг для Playwright
 
 jobs:
 # =========================================================
@@ -38,12 +42,12 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install pytest-rerunfailures webdriver-manager lxml
-
+          pip install playwright allure-pytest
       - name: Install Playwright browsers
         run: playwright install --with-deps
 
       # Подготовка истории (даже пустой)
-      - name: Prepare allure history folder
+      - name: Prepare allure-results/history folder
         run: mkdir -p allure-results/history
 
       # Скачиваем прошлую историю (если есть)
@@ -54,12 +58,15 @@ jobs:
           path: allure-results/history
         continue-on-error: true
 
+      # Создаём папку для результатов на всякий случай
+      - name: Ensure allure-results folder exists
+        run: mkdir -p allure-results
+
+      # Запуск тестов
       - name: Run tests
         run: |
-          mkdir -p allure-results
-          
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            TEST_FILE="tests/test_tracking.py"
+            if [[ "${{ github.event.inputs.test_suite }}" == "Regression" ]]; then
               TEST_FILE="tests/test_tracking.py"
             else
               TEST_FILE="tests/tests.py"
@@ -77,7 +84,11 @@ jobs:
             --alluredir=allure-results \
             --junitxml=allure-results/junit.xml || true
 
-      # Сохраняем историю и результаты
+      # Проверяем, что результаты созданы
+      - name: List allure-results content
+        run: ls -R allure-results
+
+      # Загружаем историю и результаты
       - name: Upload Allure history
         uses: actions/upload-artifact@v4
         with:
@@ -106,7 +117,6 @@ jobs:
           distribution: microsoft
           java-version: 17
 
-      # Установка xmllint для анализа junit
       - name: Install xmllint
         run: sudo apt-get update && sudo apt-get install -y libxml2-utils
 
