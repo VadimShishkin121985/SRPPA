@@ -11,7 +11,7 @@ load_dotenv()
 
 
 
-class SignIn(BasePage, LocatorsPage):
+class SignInPage(BasePage, LocatorsPage):
     def __init__(self, page):
         super().__init__(page)
         self.page = page

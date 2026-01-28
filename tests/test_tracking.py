@@ -1,64 +1,72 @@
-from time import sleep
 import pytest
-
-from pages.container_tracking_page import ContainerTracking
+from time import sleep
 from pages.main_page import MainPage
-from pages.sign_in_page import SignIn
+from pages.sign_in_page import SignInPage
+from pages.container_tracking_page import ContainerTrackingPage
 
-
-@pytest.mark.usefixtures("setup_class_page")
 class Test_Tracking:
-    page = None  # будет установлено fixture setup_class_page
 
-    @property
-    def main_page(self):
-        if not hasattr(self, "_main_page"):
-            self._main_page = MainPage(self.page)
-        return self._main_page
+    def test_sign_in(self, pages):
+        """
+        Тест авторизации.
+        """
+        pages["main"].click_on_sign_in_button()
+        pages["signin"].sign_in_form()
 
-    @property
-    def sign_in_page(self):
-        if not hasattr(self, "_sign_in_page"):
-            self._sign_in_page = SignIn(self.page)
-        return self._sign_in_page
+    def test_go_to_ct_app(self, pages):
+        """
+        Переход в Container Tracking.
+        Логин выполняется в начале теста.
+        """
+        pages["main"].click_on_sign_in_button()
+        pages["signin"].sign_in_form()
+        pages["main"].go_to_container_tracking_app()
 
-    @property
-    def container_tracking_page(self):
-        if not hasattr(self, "_container_tracking_page"):
-            self._container_tracking_page = ContainerTracking(self.page)
-        return self._container_tracking_page
+    def test_go_to_ct_from_filter(self, pages):
+        """
+        Переход в CT через фильтр.
+        """
+        pages["main"].click_on_sign_in_button()
+        pages["signin"].sign_in_form()
+        pages["main"].go_to_container_tracking_app()
 
-    def test_sign_in(self):
-        self.main_page.click_on_sign_in_button()
-        self.sign_in_page.sign_in_form()
-
-    def test_go_to_ct_app(self):
-        self.test_sign_in()
-        self.main_page.go_to_container_tracking_app()
-
-    def test_go_to_ct_from_filter_303169537(self):
-        main_page = MainPage(self.page)
+        main_page = pages["main"]
         sleep(2)
         main_page.press_tab(3, True)
         main_page.set_cn_in_filter(main_page.get_random_tracking_number())
         main_page.press_tab(2, False)
         sleep(2)
-        assert self.page.wait_for_selector(".app-root-unified_tracking", state="visible", timeout=10000)
+        assert pages["main"].page.wait_for_selector(".app-root-unified_tracking", state="visible", timeout=10000)
 
-    def test_the_update_button_in_the_list_264863760(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.update_button_click()
+    def test_the_update_button_in_the_list(self, pages):
+        """
+        Нажатие кнопки обновления в списке.
+        """
+        pages["main"].click_on_sign_in_button()
+        pages["signin"].sign_in_form()
+        pages["main"].go_to_container_tracking_app()
+        pages["ct"].update_button_click()
 
-    def test_saving_number_265191426(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.fill_input_ct_number()
-        self.container_tracking_page.click_search_button_ct_app()
-        self.container_tracking_page.click_on_follow_button()
+    def test_saving_number(self, pages):
+        """
+        Сохранение номера в контейнерном приложении.
+        """
+        pages["main"].click_on_sign_in_button()
+        pages["signin"].sign_in_form()
+        pages["main"].go_to_container_tracking_app()
+        pages["ct"].fill_input_ct_number()
+        pages["ct"].click_search_button_ct_app()
+        pages["ct"].click_on_follow_button()
 
-    def test_remove_a_card_inside_a_card_266174465(self):
-        self.test_go_to_ct_app()
-        self.container_tracking_page.open_the_updated_card()
-        self.container_tracking_page.delete_the_card()
+    def test_remove_a_card_inside_a_card(self, pages):
+        """
+        Удаление карты внутри карты.
+        """
+        pages["main"].click_on_sign_in_button()
+        pages["signin"].sign_in_form()
+        pages["main"].go_to_container_tracking_app()
+        pages["ct"].open_the_updated_card()
+        pages["ct"].delete_the_card()
 
     # def test_delete_the_card_from_the_list_265814035(self):
     #     self.test_go_to_ct_app()

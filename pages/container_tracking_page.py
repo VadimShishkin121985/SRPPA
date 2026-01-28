@@ -8,7 +8,7 @@ import os
 import shutil
 
 
-class ContainerTracking(BasePage, LocatorsPage):
+class ContainerTrackingPage(BasePage, LocatorsPage):
     # def __init__(self, page):
     #     super().__init__(page)
 
