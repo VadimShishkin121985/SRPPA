@@ -13,7 +13,8 @@ class MainPage(BasePage, LocatorsPage):
         self.page.keyboard.type(text)
 
     def click_on_sign_in_button(self):
-        self.page.locator(self.SIGN_IN).wait_for(state="visible")
+        self.page.screenshot(path="debug.png")
+        self.page.locator(self.SIGN_IN).wait_for(state="visible", timeout=30000)
         self.page.locator(self.SIGN_IN).click()
 
     def go_to_container_tracking_app(self):
