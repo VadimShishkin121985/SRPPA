@@ -29,7 +29,7 @@ from pages.main_page import MainPage
 from pages.sign_in_page import SignInPage
 from pages.container_tracking_page import ContainerTrackingPage
 
-BASE_URL = "https://your-site.com"  # замени на свой URL
+BASE_URL = "https://www.searates.com/"  # замени на свой URL
 
 # ----------------------------
 # Фикстура чистой страницы
@@ -45,7 +45,7 @@ def page():
     """
     with sync_playwright() as pw:
         browser = pw.chromium.launch(
-            headless=True,
+            headless=False,
             args=[
                 "--disable-dev-shm-usage",
                 "--no-sandbox",
