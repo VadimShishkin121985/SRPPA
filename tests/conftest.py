@@ -45,7 +45,7 @@ def page():
     """
     with sync_playwright() as pw:
         browser = pw.chromium.launch(
-            headless=False,
+            headless=True,
             args=[
                 "--disable-dev-shm-usage",
                 "--no-sandbox",
