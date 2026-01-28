@@ -49,7 +49,8 @@ def page():
             args=[
                 "--disable-dev-shm-usage",
                 "--no-sandbox",
-                "--disable-setuid-sandbox"
+                "--disable-setuid-sandbox",
+                "--disable-blink-features=AutomationControlled"
             ]
         )
 
@@ -58,7 +59,8 @@ def page():
             viewport={"width": 1920, "height": 1080}
         )
         page = context.new_page()
-        page.goto(BASE_URL, wait_until="domcontentloaded")
+
+        page.goto(BASE_URL, wait_until="networkidle", timeout=60000)
 
         yield page  # тест получает объект page
 

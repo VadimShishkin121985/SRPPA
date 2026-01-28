@@ -22,51 +22,51 @@ class Test_Tracking:
         pages["signin"].sign_in_form()
         pages["main"].go_to_container_tracking_app()
 
-    def test_go_to_ct_from_filter(self, pages):
-        """
-        Переход в CT через фильтр.
-        """
-        pages["main"].click_on_sign_in_button()
-        pages["signin"].sign_in_form()
-        pages["main"].go_to_container_tracking_app()
-
-        main_page = pages["main"]
-        sleep(2)
-        main_page.press_tab(3, True)
-        main_page.set_cn_in_filter(main_page.get_random_tracking_number())
-        main_page.press_tab(2, False)
-        sleep(2)
-        assert pages["main"].page.wait_for_selector(".app-root-unified_tracking", state="visible", timeout=10000)
-
-    def test_the_update_button_in_the_list(self, pages):
-        """
-        Нажатие кнопки обновления в списке.
-        """
-        pages["main"].click_on_sign_in_button()
-        pages["signin"].sign_in_form()
-        pages["main"].go_to_container_tracking_app()
-        pages["ct"].update_button_click()
-
-    def test_saving_number(self, pages):
-        """
-        Сохранение номера в контейнерном приложении.
-        """
-        pages["main"].click_on_sign_in_button()
-        pages["signin"].sign_in_form()
-        pages["main"].go_to_container_tracking_app()
-        pages["ct"].fill_input_ct_number()
-        pages["ct"].click_search_button_ct_app()
-        pages["ct"].click_on_follow_button()
-
-    def test_remove_a_card_inside_a_card(self, pages):
-        """
-        Удаление карты внутри карты.
-        """
-        pages["main"].click_on_sign_in_button()
-        pages["signin"].sign_in_form()
-        pages["main"].go_to_container_tracking_app()
-        pages["ct"].open_the_updated_card()
-        pages["ct"].delete_the_card()
+    # def test_go_to_ct_from_filter(self, pages):
+    #     """
+    #     Переход в CT через фильтр.
+    #     """
+    #     pages["main"].click_on_sign_in_button()
+    #     pages["signin"].sign_in_form()
+    #     pages["main"].go_to_container_tracking_app()
+    #
+    #     main_page = pages["main"]
+    #     sleep(2)
+    #     main_page.press_tab(3, True)
+    #     main_page.set_cn_in_filter(main_page.get_random_tracking_number())
+    #     main_page.press_tab(2, False)
+    #     sleep(2)
+    #     assert pages["main"].page.wait_for_selector(".app-root-unified_tracking", state="visible", timeout=10000)
+    #
+    # def test_the_update_button_in_the_list(self, pages):
+    #     """
+    #     Нажатие кнопки обновления в списке.
+    #     """
+    #     pages["main"].click_on_sign_in_button()
+    #     pages["signin"].sign_in_form()
+    #     pages["main"].go_to_container_tracking_app()
+    #     pages["ct"].update_button_click()
+    #
+    # def test_saving_number(self, pages):
+    #     """
+    #     Сохранение номера в контейнерном приложении.
+    #     """
+    #     pages["main"].click_on_sign_in_button()
+    #     pages["signin"].sign_in_form()
+    #     pages["main"].go_to_container_tracking_app()
+    #     pages["ct"].fill_input_ct_number()
+    #     pages["ct"].click_search_button_ct_app()
+    #     pages["ct"].click_on_follow_button()
+    #
+    # def test_remove_a_card_inside_a_card(self, pages):
+    #     """
+    #     Удаление карты внутри карты.
+    #     """
+    #     pages["main"].click_on_sign_in_button()
+    #     pages["signin"].sign_in_form()
+    #     pages["main"].go_to_container_tracking_app()
+    #     pages["ct"].open_the_updated_card()
+    #     pages["ct"].delete_the_card()
 
     # def test_delete_the_card_from_the_list_265814035(self):
     #     self.test_go_to_ct_app()

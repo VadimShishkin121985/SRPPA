@@ -1,18 +1,26 @@
 name: Test Container TS
 
 on:
-  schedule:
-    - cron: '0 6 * * *'
-  workflow_dispatch:
-    inputs:
-      test_suite:
-        description: 'Select test suite'
-        required: true
-        type: choice
-        options:
-          - Tracking
-          - Regression
-        default: Tracking
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+#on:
+#  schedule:
+#    - cron: '0 6 * * *'
+#  workflow_dispatch:
+#    inputs:
+#      test_suite:
+#        description: 'Select test suite'
+#        required: true
+#        type: choice
+#        options:
+#          - Tracking
+#          - Regression
+#        default: Tracking
 
 permissions:
   contents: read
