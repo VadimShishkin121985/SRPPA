@@ -4,7 +4,7 @@ class LocatorsPage():
     def __init__(self, page):
         self.page = page
 
-    SIGN_IN = ".navbar__item_signIn.js-nav-item"
+    SIGN_IN = ".navbar__item_signIn"
     LOGIN_OR_EMAIL = "#login"
     PASSWORD = "#password"
     SIGN_IN_BUTTON = ".L6xZMB.yo9FdR"
