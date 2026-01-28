@@ -55,7 +55,7 @@ def page():
 
         context = browser.new_context()
         page = context.new_page()
-        page.goto(BASE_URL)
+        page.goto(BASE_URL, wait_until="domcontentloaded")
 
         yield page  # тест получает объект page
 
