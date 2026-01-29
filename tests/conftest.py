@@ -60,7 +60,7 @@ def page():
         )
         page = context.new_page()
 
-        page.goto(BASE_URL, wait_until="networkidle", timeout=60000)
+        page.goto(BASE_URL, wait_until="load", timeout=60000)
 
         yield page  # тест получает объект page
 
