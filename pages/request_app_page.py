@@ -8,7 +8,7 @@ from playwright.sync_api import expect
 from pages.main_page import MainPage
 
 
-class RequestAQuote(BasePage, LocatorsPage):
+class RequestAQuote(LocatorsPage):
     def __init__(self, page):
         super().__init__(page)
 
