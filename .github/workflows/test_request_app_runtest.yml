@@ -1,26 +1,26 @@
 name: Request APP
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
 #on:
-#  schedule:
-#    - cron: '0 6 * * *'
-#  workflow_dispatch:
-#    inputs:
-#      test_suite:
-#        description: 'Select test suite'
-#        required: true
-#        type: choice
-#        options:
-#          - Request
-#          - Regression
-#        default: Request
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches:
+#      - main
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Select test suite'
+        required: true
+        type: choice
+        options:
+          - Request
+          - Regression
+        default: Request
 
 permissions:
   contents: read
