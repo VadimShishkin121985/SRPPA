@@ -71,6 +71,12 @@ jobs:
       - name: Ensure allure-results folder exists
         run: mkdir -p allure-results
 
+      - name: Random delay before tests (anti-cloudflare)
+        run: |
+          DELAY=$((RANDOM % 40 + 20))
+          echo "Sleeping for $DELAY seconds before tests..."
+          sleep $DELAY  
+
       # ================= Запуск тестов =================
       - name: Run tests
         run: |
@@ -169,7 +175,7 @@ jobs:
             TOTAL=0; PASSED=0; FAILED=0; SKIPPED=0; PASS_RATE=0
           fi
 
-          MESSAGE="📊 *Test Report Company*
+          MESSAGE="📊 *Container Tracking APP*
           Total Tests: $TOTAL
           ✅ Passed: $PASSED
           ❌ Failed: $FAILED

@@ -20,8 +20,20 @@ class MainPage(BasePage, LocatorsPage):
 
     def go_to_container_tracking_app(self):
         self.page.hover(self.MENU_TOOLS)
-        self.page.click(self.CONTAINER_TRACKING_MENU)
-        self.page.wait_for_selector(self.CONTAINER_TRACKING_APP, state="visible")
+
+        # Ждем пока пункт появится
+        container_tracking = self.page.locator(self.CONTAINER_TRACKING_MENU)
+        container_tracking.wait_for(state="visible", timeout=10000)
+
+        # Кликаем принудительно
+        container_tracking.click(force=True)
+
+        # Ждем загрузку приложения
+        self.page.wait_for_selector(
+            self.CONTAINER_TRACKING_APP,
+            state="visible",
+            timeout=15000
+        )
 
     def go_to_ct_app_with_aut(self):
         self.click_on_sign_in_button()
