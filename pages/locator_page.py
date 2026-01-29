@@ -8,7 +8,7 @@ class LocatorsPage():
     LOGIN_OR_EMAIL = "#login"
     PASSWORD = "#password"
     SIGN_IN_BUTTON = ".L6xZMB.yo9FdR"
-    MENU_TOOLS = "//a[@data-dropdown='tools']"
+    MENU_TOOLS = "//a[@data-dropdown='tools' and normalize-space(text())='Tools']"
     MENU_SERVICES = "//a[@data-dropdown='services']"
     CONTAINER_TRACKING_MENU = "//div[@class='dropMenu__content js-drop-content']//p[@class='dropMenu__title'][normalize-space()='Container Tracking']"
     REQUEST_A_QUOTE_MENU = "//div[@class='dropMenu__content drop-services__content js-drop-content']//span[@class='dropMenu__item__request__title'][normalize-space()='Request a quote']"

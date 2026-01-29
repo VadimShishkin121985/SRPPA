@@ -105,4 +105,4 @@ def pytest_runtest_makereport(item, call):
             file_path = f"screenshots/{test_name}_{timestamp}.png"
             page.screenshot(path=file_path, full_page=True)
 
-            print(f"\n📸 Screenshot saved: {file_path}")
+            print("📸")
