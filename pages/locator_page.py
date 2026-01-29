@@ -9,7 +9,7 @@ class LocatorsPage():
     PASSWORD = "#password"
     SIGN_IN_BUTTON = ".L6xZMB.yo9FdR"
     MENU_TOOLS = "//a[@data-dropdown='tools' and normalize-space(text())='Tools']"
-    MENU_SERVICES = "//a[@data-dropdown='services']"
+    MENU_SERVICES = "//a[@data-dropdown='services' and normalize-space(text())='Services']"
     CONTAINER_TRACKING_MENU = "//div[@class='dropMenu__content js-drop-content']//p[@class='dropMenu__title'][normalize-space()='Container Tracking']"
     REQUEST_A_QUOTE_MENU = "//div[@class='dropMenu__content drop-services__content js-drop-content']//span[@class='dropMenu__item__request__title'][normalize-space()='Request a quote']"
     CONTAINER_TRACKING_APP = ".app-root-unified_tracking"
