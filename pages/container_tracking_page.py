@@ -23,24 +23,35 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
     #     update_button.click()
     #
     #     expect(update_button).not_to_have_text("update", timeout=15000)
-
     def update_button_click(self):
-        # 1. Находим кнопку по тексту
-        update_button = self.page.locator("button:has-text('update')").first
-        expect(update_button).to_be_visible()
 
-        # 2. Сохраняем стабильный идентификатор
-        card_id = update_button.get_attribute("data-test-id")
-        assert card_id, "Не удалось получить data-test-id у кнопки update"
+        update_button = self.page.locator(
+            "[data-test-id='card-status-update-button']"
+        ).first
 
-        # 3. Перелокируемся по data-test-id
-        stable_button = self.page.locator(f"[data-test-id='{card_id}']")
+        expect(update_button).to_be_visible(timeout=10000)
 
-        # 4. Кликаем
-        stable_button.click()
+        # Берем карточку
+        card = update_button.locator(
+            "xpath=ancestor::div[.//div[@data-test-id='card-number']]"
+        )
 
-        # 5. Ждём, что текст изменится
-        expect(stable_button).not_to_have_text("update", timeout=15000)
+        # Сохраняем номер
+        card_number = card.locator(
+            "[data-test-id='card-number']"
+        ).first.inner_text()
+
+        print(f"Updating card: {card_number}")
+
+        # Кликаем update
+        update_button.click()
+
+        # 👉 Ждем что в этой карточке появится любой статус кроме update
+        status = card.locator(
+            "[data-test-id^='card-status-']:not([data-test-id='card-status-update-button'])"
+        )
+
+        expect(status).to_be_visible(timeout=20000)
 
     def fill_input_ct_number(self):
         self.number = self.get_random_tracking_number()

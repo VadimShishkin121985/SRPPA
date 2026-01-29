@@ -2,6 +2,7 @@ from time import sleep
 
 from pages.base_page import BasePage
 from pages.locator_page import LocatorsPage
+from pages.sign_in_page import SignInPage
 
 
 class MainPage(BasePage, LocatorsPage):
@@ -21,3 +22,8 @@ class MainPage(BasePage, LocatorsPage):
         self.page.hover(self.MENU_TOOLS)
         self.page.click(self.CONTAINER_TRACKING_MENU)
         self.page.wait_for_selector(self.CONTAINER_TRACKING_APP, state="visible")
+
+    def go_to_ct_app_with_aut(self):
+        self.click_on_sign_in_button()
+        SignInPage(self.page).sign_in_form()
+        self.go_to_container_tracking_app()
