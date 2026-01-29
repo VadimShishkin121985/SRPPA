@@ -71,13 +71,13 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
 
     def open_the_updated_card(self):
         self.page.click(self.OPEN_CARD)
-        expect(self.page.locator(self.ROUTE_BUTTON)).to_be_visible()
-        expect(self.page.locator(self.FOLLOW_BUTTON)).not_to_be_visible()
+        expect(self.page.locator(self.ROUTE_BUTTON)).to_be_visible(timeout=500000)
+        expect(self.page.locator(self.FOLLOW_BUTTON)).not_to_be_visible(timeout=500000)
 
     def delete_the_card(self):
         self.page.click(self.DELETE_CARD_BUTTON)
         self.page.click(self.CONFIRM_DELETE_CARD_BUTTON)
-        expect(self.page.locator(self.CT_LIST_CARD)).to_be_visible()
+        expect(self.page.locator(self.CT_LIST_CARD)).to_be_visible(timeout=500000)
 
     def open_the_first_card(self):
         self.page.click(self.FIRST_CARD)

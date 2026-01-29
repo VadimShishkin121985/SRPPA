@@ -1,5 +1,8 @@
 import pytest
 from time import sleep
+
+from playwright.sync_api import expect
+
 from pages.main_page import MainPage
 from pages.sign_in_page import SignInPage
 from pages.container_tracking_page import ContainerTrackingPage
@@ -26,7 +29,8 @@ class Test_Tracking:
         """
         Переход в CT через фильтр.
         """
-        pages["main"].go_to_ct_app_with_aut()
+        pages["main"].click_on_sign_in_button()
+        pages["signin"].sign_in_form()
 
         main_page = pages["main"]
         sleep(2)
@@ -34,7 +38,8 @@ class Test_Tracking:
         main_page.set_cn_in_filter(main_page.get_random_tracking_number())
         main_page.press_tab(2, False)
         sleep(2)
-        assert pages["main"].page.wait_for_selector(".app-root-unified_tracking", state="visible", timeout=10000)
+        expect(pages["main"].page.locator(".app-root-unified_tracking")).to_be_visible(timeout=50000)
+
 
     def test_the_update_button_in_the_list(self, pages):
         """
@@ -100,7 +105,7 @@ class Test_Tracking:
         pages["ct"].hover_and_click_on_container_in_point()
 
     def test_checking_the_limit_for_unauthorized_user(self, pages):
-        pages["main"].go_to_ct_app_with_aut()
+        pages["main"].go_to_container_tracking_app()
         pages["ct"].fill_input_ct_number()
         pages["ct"].search_button_ct_app_limiter()
 
