@@ -4,6 +4,8 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 
+from pages.request_app_page import RequestAQuote
+
 load_dotenv()
 
 BASE_URL = os.getenv("BASE_URL", "https://www.searates.com/")
@@ -85,17 +87,21 @@ def pages(page):
     return {
         "main": MainPage(page),
         "signin": SignInPage(page),
-        "ct": ContainerTrackingPage(page)
+        "ct": ContainerTrackingPage(page),
+        "request": RequestAQuote(page)
     }
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """
-    Делает скриншот при падении теста
-    """
     outcome = yield
     rep = outcome.get_result()
 
+    # 👉 только если упал тест
     if rep.when == "call" and rep.failed:
+
+        # 👉 только в CI (GitHub)
+        if os.getenv("CI") != "true":
+            return
+
         page = item.funcargs.get("page")
         if page:
             os.makedirs("screenshots", exist_ok=True)
@@ -105,5 +111,3 @@ def pytest_runtest_makereport(item, call):
 
             file_path = f"screenshots/{test_name}_{timestamp}.png"
             page.screenshot(path=file_path, full_page=True)
-
-            print("📸")
