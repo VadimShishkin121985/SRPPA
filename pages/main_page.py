@@ -19,6 +19,7 @@ class MainPage(BasePage, LocatorsPage):
         self.page.locator(self.SIGN_IN).click()
 
     def go_to_container_tracking_app(self):
+        sleep(2)
         self.page.hover(self.MENU_TOOLS)
 
         # Ждем пока пункт появится
