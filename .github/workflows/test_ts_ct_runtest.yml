@@ -78,6 +78,8 @@ jobs:
           sleep $DELAY  
 
       # ================= Запуск тестов =================
+      - name: Create screenshots folder
+        run: mkdir -p screenshots
       - name: Run tests
         run: |
           echo "Selected test suite: ${{ github.event.inputs.test_suite }}"
@@ -101,6 +103,13 @@ jobs:
         env:
           TEST_ACCOUNT_LOGIN: ${{ secrets.TEST_ACCOUNT_LOGIN }}
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-test-screenshots
+          path: screenshots
+          retention-days: 2
 
       # Проверяем, что результаты созданы
       - name: List allure-results content

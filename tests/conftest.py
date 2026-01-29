@@ -2,6 +2,7 @@ import pytest
 from playwright.sync_api import sync_playwright
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -85,3 +86,23 @@ def pages(page):
         "signin": SignInPage(page),
         "ct": ContainerTrackingPage(page)
     }
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """
+    Делает скриншот при падении теста
+    """
+    outcome = yield
+    rep = outcome.get_result()
+
+    if rep.when == "call" and rep.failed:
+        page = item.funcargs.get("page")
+        if page:
+            os.makedirs("screenshots", exist_ok=True)
+
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            test_name = item.name.replace("/", "_")
+
+            file_path = f"screenshots/{test_name}_{timestamp}.png"
+            page.screenshot(path=file_path, full_page=True)
+
+            print(f"\n📸 Screenshot saved: {file_path}")
