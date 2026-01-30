@@ -24,7 +24,7 @@ def page():
     """
     with sync_playwright() as pw:
         browser = pw.chromium.launch(
-            headless=True,
+            headless=False,
             args=[
                 "--disable-dev-shm-usage",
                 "--no-sandbox",
@@ -35,7 +35,7 @@ def page():
 
         context = browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
-            viewport={"width": 1920, "height": 1080},
+            viewport={"width": 1700, "height": 1080},
             permissions = ["clipboard-read", "clipboard-write"]
         )
         page = context.new_page()
