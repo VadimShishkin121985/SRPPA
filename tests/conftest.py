@@ -1,33 +1,5 @@
 import pytest
 from playwright.sync_api import sync_playwright
-import os
-from dotenv import load_dotenv
-from datetime import datetime
-
-from pages.request_app_page import RequestAQuote
-
-load_dotenv()
-
-BASE_URL = os.getenv("BASE_URL", "https://www.searates.com/")
-# @pytest.fixture
-# def page():
-#     with sync_playwright() as pw:
-#         browser = pw.chromium.launch(headless=True)
-#         context = browser.new_context(
-#             viewport={"width": 1700, "height": 1080},
-#             accept_downloads=True,
-#             permissions = ["clipboard-read", "clipboard-write"]
-#         )
-#         page = context.new_page()
-#         page.goto(BASE_URL)
-#
-#         yield page
-#
-#         context.close()
-#         browser.close()
-
-import pytest
-from playwright.sync_api import sync_playwright
 from pages.main_page import MainPage
 from pages.sign_in_page import SignInPage
 from pages.container_tracking_page import ContainerTrackingPage
@@ -93,21 +65,16 @@ def pages(page):
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
-    rep = outcome.get_result()
+    report = outcome.get_result()
 
-    # 👉 только если упал тест
-    if rep.when == "call" and rep.failed:
-
-        # 👉 только в CI (GitHub)
-        if os.getenv("CI") != "true":
-            return
-
+    if report.when == "call" and report.failed:
         page = item.funcargs.get("page")
         if page:
             os.makedirs("screenshots", exist_ok=True)
-
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            test_name = item.name.replace("/", "_")
+            file_name = f"screenshots/{item.name}_{timestamp}.png"
 
-            file_path = f"screenshots/{test_name}_{timestamp}.png"
-            page.screenshot(path=file_path, full_page=True)
+            page.screenshot(
+                path=file_name,
+                full_page=False   # 👈 только видимая область
+            )
