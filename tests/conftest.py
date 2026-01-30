@@ -1,6 +1,7 @@
 import pytest
 from playwright.sync_api import sync_playwright
 from pages.main_page import MainPage
+from pages.request_app_page import RequestAQuote
 from pages.sign_in_page import SignInPage
 from pages.container_tracking_page import ContainerTrackingPage
 
