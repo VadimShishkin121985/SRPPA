@@ -52,7 +52,7 @@ class RequestAQuote(LocatorsPage):
         self.page.locator(".Calendar__day.-weekend[aria-disabled='false']").first.click()
 
         # Additional information
-        self.page.fill(".textarea__element", "Test Test Test Test Test")
+        self.page.fill(".textarea__element", "Test")
 
         # Отправка запроса
         self.page.locator(".PfDxg", has_text="Send").first.click()

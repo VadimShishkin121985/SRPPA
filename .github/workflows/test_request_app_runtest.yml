@@ -10,7 +10,7 @@ name: Request APP
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: "0 */8 * * *" # заруск каждые 8 часов
   workflow_dispatch:
     inputs:
       test_suite:
