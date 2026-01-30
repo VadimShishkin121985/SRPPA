@@ -66,7 +66,6 @@ def pages(page):
         "ct": ContainerTrackingPage(page),
         "request": RequestAQuote(page)
     }
-@pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
@@ -75,10 +74,16 @@ def pytest_runtest_makereport(item, call):
         page = item.funcargs.get("page")
         if page:
             os.makedirs("screenshots", exist_ok=True)
-            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+            try:
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            except Exception as e:
+                print(f"Screenshot hook error: {e}")
+                timestamp = "no_time"
+
             file_name = f"screenshots/{item.name}_{timestamp}.png"
 
             page.screenshot(
                 path=file_name,
-                full_page=False   # 👈 только видимая область
+                full_page=False  # только видимая часть экрана
             )
