@@ -3,6 +3,7 @@ from time import sleep
 from pages.base_page import BasePage
 from pages.locator_page import LocatorsPage
 from pages.sign_in_page import SignInPage
+from playwright.sync_api import expect
 
 
 class MainPage(BasePage, LocatorsPage):
@@ -19,22 +20,20 @@ class MainPage(BasePage, LocatorsPage):
         self.page.locator(self.SIGN_IN).click()
 
     def go_to_container_tracking_app(self):
-        sleep(2)
-        self.page.hover(self.MENU_TOOLS)
+        page = self.page
 
-        # Ждем пока пункт появится
-        container_tracking = self.page.locator(self.CONTAINER_TRACKING_MENU)
-        container_tracking.wait_for(state="visible", timeout=10000)
+        # Закрываем возможные оверлеи
+        page.keyboard.press("Escape")
+        page.click("body", position={"x": 5, "y": 5})
 
-        # Кликаем принудительно
-        container_tracking.click(force=True)
+        tools = page.locator(self.MENU_TOOLS)
+        expect(tools).to_be_visible()
+        tools.hover()
 
-        # Ждем загрузку приложения
-        self.page.wait_for_selector(
-            self.CONTAINER_TRACKING_APP,
-            state="visible",
-            timeout=15000
-        )
+        # 👇 если этот пункт появился — значит dropdown открыт
+        self._safe_click(self.CONTAINER_TRACKING_MENU)
+
+        page.locator(self.CONTAINER_TRACKING_APP).wait_for(state="visible", timeout=15000)
 
     def go_to_ct_app_with_aut(self):
         self.click_on_sign_in_button()
