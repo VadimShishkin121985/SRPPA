@@ -3,6 +3,7 @@ import os
 import random
 from dotenv import load_dotenv
 from playwright.sync_api import expect
+from playwright.sync_api import expect, TimeoutError as PWTimeoutError
 
 load_dotenv()
 
@@ -27,16 +28,21 @@ class BasePage:
         numbers = [n.strip() for n in numbers_str.split(",") if n.strip()]
         return random.choice(numbers) if numbers else None
 
+
     def _safe_click(self, locator: str, timeout: int = 30000):
         el = self.page.locator(locator)
-
-        # ждем появление и стабильность
         el.wait_for(state="visible", timeout=timeout)
         el.scroll_into_view_if_needed()
         expect(el).to_be_enabled()
 
-        # проверка кликабельности без реального клика
-        el.click(trial=True, timeout=min(5000, timeout))
+        try:
+            el.click(trial=True, timeout=5000)
+        except PWTimeoutError:
+            # чаще всего это overlay / active section intercept
+            self.page.keyboard.press("Escape")
+            self.page.click("body", position={"x": 5, "y": 5})
+            el.wait_for(state="visible", timeout=timeout)
+            el.scroll_into_view_if_needed()
+            el.click(trial=True, timeout=5000)
 
-        # реальный клик
         el.click(timeout=timeout)
