@@ -29,14 +29,8 @@ class BasePage:
 
     def _safe_click(self, locator: str, timeout: int = 30000):
         el = self.page.locator(locator)
-
-        # ждем появление и стабильность
         el.wait_for(state="visible", timeout=timeout)
         el.scroll_into_view_if_needed()
         expect(el).to_be_enabled()
-
-        # проверка кликабельности без реального клика
         el.click(trial=True, timeout=min(5000, timeout))
-
-        # реальный клик
         el.click(timeout=timeout)
