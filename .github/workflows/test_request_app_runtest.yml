@@ -81,7 +81,12 @@ jobs:
       # ================= Запуск тестов =================
       - name: Create screenshots folder
         run: mkdir -p screenshots
-      - name: Run tests
+      - name: Run tests (Xvfb headed)
+        env:
+          CI: true
+          PW_HEADLESS: "false"
+          TEST_ACCOUNT_LOGIN: ${{ secrets.TEST_ACCOUNT_LOGIN }}
+          TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
         run: |
           echo "Selected test suite: ${{ github.event.inputs.test_suite }}"
 
@@ -96,14 +101,13 @@ jobs:
           fi
 
           echo "Running tests from: $TEST_FILE"
-          pytest $TEST_FILE \
+
+          xvfb-run -a pytest $TEST_FILE \
             --disable-warnings \
             -v \
             --alluredir=allure-results \
             --junitxml=allure-results/junit.xml || true
-        env:
-          TEST_ACCOUNT_LOGIN: ${{ secrets.TEST_ACCOUNT_LOGIN }}
-          TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
+
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4

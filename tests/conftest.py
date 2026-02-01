@@ -12,39 +12,47 @@ BASE_URL = "https://www.searates.com/"  # замени на свой URL
 
 # ----------------------------
 # Фикстура чистой страницы
-# ----------------------------
+import pytest
+from playwright.sync_api import sync_playwright
+
+import pytest
+from playwright.sync_api import sync_playwright
+
+BASE_URL = "https://www.searates.com/"
+
 @pytest.fixture(scope="function")
 def page():
-    """
-    Каждый тест:
-    - стартует новый браузер
-    - создаёт новый контекст
-    - создаёт новую страницу
-    - закрывает браузер после теста
-    """
+    # env PW_HEADLESS=true/false (по умолчанию true в CI)
+    pw_headless_env = os.getenv("PW_HEADLESS")
+    if pw_headless_env is None:
+        # если переменная не задана — ориентируемся на CI
+        headless = os.getenv("CI") == "true"
+    else:
+        headless = pw_headless_env.strip().lower() in ("1", "true", "yes")
+
     with sync_playwright() as pw:
         browser = pw.chromium.launch(
-            headless=True,
+            headless=headless,
             args=[
                 "--disable-dev-shm-usage",
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
-                "--disable-blink-features=AutomationControlled"
-            ]
+                "--disable-blink-features=AutomationControlled",
+            ],
         )
 
         context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                       "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             viewport={"width": 1700, "height": 1080},
-            permissions = ["clipboard-read", "clipboard-write"]
+            permissions=["clipboard-read", "clipboard-write"],
         )
-        page = context.new_page()
 
+        page = context.new_page()
         page.goto(BASE_URL, wait_until="load", timeout=60000)
 
-        yield page  # тест получает объект page
+        yield page
 
-        # закрытие ресурсов после теста
         context.close()
         browser.close()
 
