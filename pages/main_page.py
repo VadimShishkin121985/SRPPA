@@ -3,7 +3,7 @@ from time import sleep
 from pages.base_page import BasePage
 from pages.locator_page import LocatorsPage
 from pages.sign_in_page import SignInPage
-
+from playwright.sync_api import expect
 
 class MainPage(BasePage, LocatorsPage):
     def __init__(self, page):
@@ -19,22 +19,28 @@ class MainPage(BasePage, LocatorsPage):
         self.page.locator(self.SIGN_IN).click()
 
     def go_to_container_tracking_app(self):
-        sleep(2)
-        self.page.hover(self.MENU_TOOLS)
+        """Переход в Container Tracking через меню Tools"""
+        page = self.page
 
-        # Ждем пока пункт появится
-        container_tracking = self.page.locator(self.CONTAINER_TRACKING_MENU)
-        container_tracking.wait_for(state="visible", timeout=10000)
+        # 1) Сброс возможных активных меню/оверлеев
+        page.keyboard.press("Escape")
+        page.click("body", position={"x": 5, "y": 5})
 
-        # Кликаем принудительно
-        container_tracking.click(force=True)
+        # 2) Открываем Tools
+        tools = page.locator(self.MENU_TOOLS)
+        expect(tools).to_be_visible()
+        tools.hover()
 
-        # Ждем загрузку приложения
-        self.page.wait_for_selector(
-            self.CONTAINER_TRACKING_APP,
-            state="visible",
-            timeout=15000
-        )
+        # 3) Ждём появления пункта Container Tracking
+        item = page.locator(self.CONTAINER_TRACKING_MENU)
+        item.wait_for(state="visible", timeout=10000)
+        item.scroll_into_view_if_needed()
+
+        # 4) Кликаем безопасно (без force)
+        self._safe_click(self.CONTAINER_TRACKING_MENU, timeout=30000)
+
+        # 5) Ждём, что приложение загрузилось
+        page.locator(self.CONTAINER_TRACKING_APP).wait_for(state="visible", timeout=15000)
 
     def go_to_ct_app_with_aut(self):
         self.click_on_sign_in_button()

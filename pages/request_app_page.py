@@ -8,15 +8,33 @@ from playwright.sync_api import expect
 from pages.main_page import MainPage
 
 
-class RequestAQuote(LocatorsPage):
+class RequestAQuote(LocatorsPage, BasePage):
     def __init__(self, page):
         super().__init__(page)
 
     def go_to_request_app(self):
         """Переход в Request A Quote через меню Services"""
-        self.page.hover(self.MENU_SERVICES)
-        self.page.click(self.REQUEST_A_QUOTE_MENU)
-        expect(self.page.locator(self.REQUEST_APP)).to_be_visible(timeout=10000)
+        page = self.page
+
+        # 1) Сброс возможных активных меню
+        page.keyboard.press("Escape")
+        page.click("body", position={"x": 5, "y": 5})
+
+        # 2) Наводимся на Services
+        services = page.locator(self.MENU_SERVICES)
+        expect(services).to_be_visible()
+        services.hover()
+
+        # 3) Ждём появления пункта (это и есть признак открытого dropdown)
+        request_item = page.locator(self.REQUEST_A_QUOTE_MENU)
+        request_item.wait_for(state="visible", timeout=10000)
+        request_item.scroll_into_view_if_needed()
+
+        # 4) Кликаем безопасно (без force)
+        self._safe_click(self.REQUEST_A_QUOTE_MENU)
+
+        # 5) Ждём, что приложение реально открылось
+        page.locator(self.REQUEST_APP).wait_for(state="visible", timeout=15000)
 
     def send_default_request(self):
         """Отправка стандартного запроса с заполнением всех полей"""

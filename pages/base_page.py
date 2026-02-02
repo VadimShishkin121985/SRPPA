@@ -2,6 +2,7 @@ from time import sleep
 import os
 import random
 from dotenv import load_dotenv
+from playwright.sync_api import expect
 
 load_dotenv()
 
@@ -26,4 +27,17 @@ class BasePage:
         numbers = [n.strip() for n in numbers_str.split(",") if n.strip()]
         return random.choice(numbers) if numbers else None
 
+    def _safe_click(self, locator: str, timeout: int = 30000):
+        el = self.page.locator(locator)
+
+        # ждем появление и стабильность
+        el.wait_for(state="visible", timeout=timeout)
+        el.scroll_into_view_if_needed()
+        expect(el).to_be_enabled()
+
+        # проверка кликабельности без реального клика
+        el.click(trial=True, timeout=min(5000, timeout))
+
+        # реальный клик
+        el.click(timeout=timeout)
 
