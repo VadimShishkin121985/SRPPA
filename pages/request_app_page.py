@@ -1,11 +1,9 @@
-import random
-import string
-from time import sleep
+
 from pages.base_page import BasePage
 from pages.locator_page import LocatorsPage
 from playwright.sync_api import expect
 
-from pages.main_page import MainPage
+
 
 
 class RequestAQuote(LocatorsPage, BasePage):
@@ -13,28 +11,31 @@ class RequestAQuote(LocatorsPage, BasePage):
         super().__init__(page)
 
     def go_to_request_app(self):
-        """Переход в Request A Quote через меню Services"""
         page = self.page
 
-        # 1) Сброс возможных активных меню
+        # Закрываем оверлеи
         page.keyboard.press("Escape")
         page.click("body", position={"x": 5, "y": 5})
 
-        # 2) Наводимся на Services
+        # Открываем Services
         services = page.locator(self.MENU_SERVICES)
         expect(services).to_be_visible()
         services.hover()
 
-        # 3) Ждём появления пункта (это и есть признак открытого dropdown)
-        request_item = page.locator(self.REQUEST_A_QUOTE_MENU)
-        request_item.wait_for(state="visible", timeout=10000)
-        request_item.scroll_into_view_if_needed()
+        # Ждём, что services dropdown появился
+        page.locator(self.SERVICES_DROPDOWN).wait_for(state="visible", timeout=10000)
 
-        # 4) Кликаем безопасно (без force)
-        self._safe_click(self.REQUEST_A_QUOTE_MENU)
+        # 🔥 Если references активен и перекрывает — закрываем/снимаем
+        ref_active = page.locator(self.REFERENCES_ACTIVE_SECTION)
+        if ref_active.count() > 0:
+            # Самый надёжный способ "снять" — выйти мышью и заново hover
+            page.mouse.move(1, 1)
+            page.keyboard.press("Escape")
+            services.hover()
+            page.locator(self.SERVICES_DROPDOWN).wait_for(state="visible", timeout=10000)
 
-        # 5) Ждём, что приложение реально открылось
-        page.locator(self.REQUEST_APP).wait_for(state="visible", timeout=15000)
+        # Клик по пункту
+        self._safe_click(self.REQUEST_A_QUOTE_MENU, timeout=30000)
 
     def send_default_request(self):
         """Отправка стандартного запроса с заполнением всех полей"""

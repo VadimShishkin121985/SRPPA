@@ -67,3 +67,6 @@ class LocatorsPage():
     HS_CODE_REQUEST = ".a3RkC"
 
 
+    SERVICES_DROPDOWN = "css=div.drop-services__content"   # контейнер services-меню
+    REFERENCES_ACTIVE_SECTION = "css=div[data-dropdown='references'].dropMenu__section_active"
+    SERVICES_ACTIVE_SECTION = "css=div[data-dropdown='services'].dropMenu__section_active"  # если есть
