@@ -103,6 +103,7 @@ jobs:
         env:
           TEST_ACCOUNT_LOGIN: ${{ secrets.TEST_ACCOUNT_LOGIN }}
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
+          TEST_CT_NUMBER: ${{ secrets.TEST_CT_NUMBER }}
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
