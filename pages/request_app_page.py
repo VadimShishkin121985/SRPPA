@@ -76,4 +76,4 @@ class RequestAQuote(LocatorsPage, BasePage):
         self.page.locator(".PfDxg", has_text="Send").first.click()
 
         # Ждём подтверждения
-        expect(self.page.locator(".cJg5n")).to_be_visible(timeout=50000)
+        expect(self.page.locator("#request_a_quote")).to_be_visible(timeout=50000)
