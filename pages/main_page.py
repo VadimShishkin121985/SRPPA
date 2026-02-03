@@ -10,8 +10,8 @@ class MainPage(BasePage, LocatorsPage):
         super().__init__(page)
 
     def set_cn_in_filter(self, text):
-        sleep(2)
-        self.page.keyboard.type(text)
+        assert text is not None, "Tracking number is None"
+        self.page.keyboard.type(str(text))
 
     def click_on_sign_in_button(self):
         self.page.screenshot(path="debug.png")

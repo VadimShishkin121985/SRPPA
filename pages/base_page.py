@@ -22,10 +22,17 @@ class BasePage:
             sleep(1)
         self.page.keyboard.press("Enter")
 
-    def get_random_tracking_number(eslf):
+    def get_random_tracking_number(self) -> str:
         numbers_str = os.getenv("TEST_CT_NUMBER", "")
         numbers = [n.strip() for n in numbers_str.split(",") if n.strip()]
-        return random.choice(numbers) if numbers else None
+
+        if not numbers:
+            raise RuntimeError(
+                "TEST_CT_NUMBER is empty or not set. "
+                "Expected comma-separated tracking numbers."
+            )
+
+        return random.choice(numbers)
 
     def _safe_click(self, locator: str, timeout: int = 30000):
         el = self.page.locator(locator)
