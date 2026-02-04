@@ -24,7 +24,8 @@ class MainPage(BasePage, LocatorsPage):
 
         # 1) Сброс возможных активных меню/оверлеев
         page.keyboard.press("Escape")
-        page.click("body", position={"x": 5, "y": 5})
+        page.mouse.move(1, 1)
+        page.locator("body").click(position={"x": 5, "y": 5})
 
         # 2) Открываем Tools
         tools = page.locator(self.MENU_TOOLS)
