@@ -42,7 +42,7 @@ class BasePage:
         page.mouse.move(1, 1)
         page.locator("body").click(position={"x": 5, "y": 5})
 
-        el = page.locator(locator)
+        el = page.locator(locator).first
 
         el.wait_for(state="visible", timeout=timeout)
         el.scroll_into_view_if_needed()
