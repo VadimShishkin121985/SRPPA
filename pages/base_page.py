@@ -35,16 +35,29 @@ class BasePage:
         return random.choice(numbers)
 
     def _safe_click(self, locator: str, timeout: int = 30000):
-        el = self.page.locator(locator)
+        page = self.page
 
-        # ждем появление и стабильность
+        # 0) попытка снять активные hover/меню (часто именно они мешают)
+        page.keyboard.press("Escape")
+        page.mouse.move(1, 1)
+        page.locator("body").click(position={"x": 5, "y": 5})
+
+        el = page.locator(locator)
+
         el.wait_for(state="visible", timeout=timeout)
         el.scroll_into_view_if_needed()
         expect(el).to_be_enabled()
 
-        # проверка кликабельности без реального клика
-        el.click(trial=True, timeout=min(5000, timeout))
+        # 1) проверка кликабельности
+        try:
+            el.click(trial=True, timeout=min(5000, timeout))
+        except Exception:
+            # 2) если кто-то перехватывает клики — ещё раз “сброс” и повтор
+            page.keyboard.press("Escape")
+            page.mouse.move(1, 1)
+            page.locator("body").click(position={"x": 5, "y": 5})
+            el.scroll_into_view_if_needed()
+            el.click(trial=True, timeout=min(5000, timeout))
 
-        # реальный клик
+        # 3) реальный клик
         el.click(timeout=timeout)
-
