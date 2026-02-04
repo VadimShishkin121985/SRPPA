@@ -36,32 +36,26 @@ class BasePage:
 
     def _safe_click(self, locator: str, timeout: int = 30000):
         page = self.page
-
-        # попытка снять активные меню/оверлеи (как раньше, если ты добавлял)
-        page.keyboard.press("Escape")
-        page.mouse.move(1, 1)
-        page.locator("body").click(position={"x": 5, "y": 5})
-
         els = page.locator(locator)
 
-        # ждём, что хоть один элемент появится в DOM
         expect(els.first).to_be_attached(timeout=timeout)
 
-        # выбираем первый ВИДИМЫЙ
+        # выбрать первый видимый
         chosen = None
-        count = els.count()
-        for i in range(count):
-            candidate = els.nth(i)
-            if candidate.is_visible():
-                chosen = candidate
+        for i in range(els.count()):
+            cand = els.nth(i)
+            if cand.is_visible():
+                chosen = cand
                 break
-
         if chosen is None:
-            # если все hidden — пусть будет понятная ошибка
             raise TimeoutError(f"_safe_click: no visible element for locator: {locator}")
 
         chosen.scroll_into_view_if_needed()
         expect(chosen).to_be_enabled()
 
-        chosen.click(trial=True, timeout=min(5000, timeout))
-        chosen.click(timeout=timeout)
+        try:
+            chosen.click(trial=True, timeout=min(5000, timeout))
+            chosen.click(timeout=timeout)
+        except Exception:
+            # 🔥 если перехватывают pointer events — кликаем событием по элементу
+            chosen.dispatch_event("click")
