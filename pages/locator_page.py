@@ -10,7 +10,7 @@ class LocatorsPage():
     SIGN_IN_BUTTON = ".L6xZMB.yo9FdR"
     MENU_TOOLS = "//a[@data-dropdown='tools' and normalize-space(text())='Tools']"
     MENU_SERVICES = "//a[@data-dropdown='services' and normalize-space(text())='Services']"
-    CONTAINER_TRACKING_MENU = "//div[@class='dropMenu__content js-drop-content']//p[@class='dropMenu__title'][normalize-space()='Container Tracking']"
+    CONTAINER_TRACKING_MENU = "xpath=//p[@class='dropMenu__title' and normalize-space()='Container Tracking']""/ancestor::a[1]"
     REQUEST_A_QUOTE_MENU = "//div[@class='dropMenu__content drop-services__content js-drop-content']//span[@class='dropMenu__item__request__title'][normalize-space()='Request a quote']"
     CONTAINER_TRACKING_APP = ".app-root-unified_tracking"
     REQUEST_APP = ".F2Sj4"
@@ -70,3 +70,4 @@ class LocatorsPage():
     SERVICES_DROPDOWN = "css=div.drop-services__content"   # контейнер services-меню
     REFERENCES_ACTIVE_SECTION = "css=div[data-dropdown='references'].dropMenu__section_active"
     SERVICES_ACTIVE_SECTION = "css=div[data-dropdown='services'].dropMenu__section_active"  # если есть
+    TOOLS_SECTION_ACTIVE = "css=div[data-dropdown='tools'].dropMenu__section_active"

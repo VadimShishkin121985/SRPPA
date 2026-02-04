@@ -19,29 +19,30 @@ class MainPage(BasePage, LocatorsPage):
         self.page.locator(self.SIGN_IN).click()
 
     def go_to_container_tracking_app(self):
-        """Переход в Container Tracking через меню Tools"""
         page = self.page
 
-        # 1) Сброс возможных активных меню/оверлеев
-        page.keyboard.press("Escape")
-        page.mouse.move(1, 1)
-        page.locator("body").click(position={"x": 5, "y": 5})
+        # 1) сбросить всё активное
+        self._reset_dropdowns()
 
-        # 2) Открываем Tools
+        # 2) открыть Tools
         tools = page.locator(self.MENU_TOOLS)
         expect(tools).to_be_visible()
         tools.hover()
 
-        # 3) Ждём появления пункта Container Tracking
-        item = page.locator(self.CONTAINER_TRACKING_MENU)
-        item.wait_for(state="visible", timeout=10000)
+        # 3) ✅ дождаться, что tools-секция стала активной,
+        #    а services-секция исчезла (иначе она будет перехватывать клики)
+        expect(page.locator(self.TOOLS_SECTION_ACTIVE)).to_be_visible(timeout=5000)
+        expect(page.locator(self.SERVICES_ACTIVE_SECTION)).to_have_count(0, timeout=5000)
+
+        # 4) дождаться пункта и кликнуть
+        item = page.locator(self.CONTAINER_TRACKING_MENU).first
+        expect(item).to_be_visible(timeout=10000)
         item.scroll_into_view_if_needed()
 
-        # 4) Кликаем безопасно (без force)
         self._safe_click(self.CONTAINER_TRACKING_MENU, timeout=30000)
 
-        # 5) Ждём, что приложение загрузилось
-        page.locator(self.CONTAINER_TRACKING_APP).wait_for(state="visible", timeout=15000)
+        # 5) приложение загрузилось
+        expect(page.locator(self.CONTAINER_TRACKING_APP)).to_be_visible(timeout=15000)
 
     def go_to_ct_app_with_aut(self):
         self.click_on_sign_in_button()
