@@ -123,20 +123,11 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
     def upload_test_file(self):
         page = self.page
 
-        # 1) открыть upload
         page.click(self.UPLOAD_FILE_MENU_CT)
 
-        # 2) дождаться input[type=file]
         file_input = page.locator(self.UPLOAD_FILE_INPUT).first
         expect(file_input).to_be_attached(timeout=10000)
 
-        # 3) (на всякий) сделать input видимым
-        page.evaluate(
-            "(el) => { el.style.display='block'; el.style.visibility='visible'; el.style.opacity=1; }",
-            file_input
-        )
-
-        # 4) загрузить твой файл
         file_path = os.path.abspath(os.path.join(os.getcwd(), "data", "containers.xlsx"))
         assert os.path.exists(file_path), f"Upload file not found: {file_path}"
 

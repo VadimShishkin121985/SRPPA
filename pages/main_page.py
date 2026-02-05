@@ -20,19 +20,10 @@ class MainPage(BasePage, LocatorsPage):
 
     def go_to_container_tracking_app(self):
         page = self.page
-
-        # 1) Открываем меню Tools
         tools = page.locator(self.MENU_TOOLS)
         expect(tools).to_be_visible(timeout=10000)
         tools.hover()
-
-        # 2) Кликаем Container Tracking безопасно
-        # _safe_click сам:
-        # - сбросит активные меню
-        # - проверит, что элемент реально кликабелен
         self._safe_click(self.CONTAINER_TRACKING_MENU, timeout=30000)
-
-        # 3) Ждём, что приложение Container Tracking загрузилось
         expect(
             page.locator(self.CONTAINER_TRACKING_APP)
         ).to_be_visible(timeout=15000)
