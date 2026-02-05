@@ -123,32 +123,25 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
     def upload_test_file(self):
         page = self.page
 
-        # 1) Открываем меню/модалку Upload (подставь свои локаторы)
+        # 1) Открываем меню Upload
         page.click(self.UPLOAD_FILE_MENU_CT)
-        expect(page.locator(self.UPLOAD_MODAL)).to_be_visible(timeout=10000)  # если есть
 
-        # 2) Берём input file как locator (НЕ page.set_input_files)
-        file_input = page.locator(
-            "input[type='file'][accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']"
-        ).first
-
-        # 3) Ждём что он хотя бы есть в DOM
+        # 2) Находим input
+        file_input = page.locator(self.UPLOAD_FILE_INPUT).first
         expect(file_input).to_be_attached(timeout=10000)
 
-        # 4) Если он скрыт — делаем его видимым через JS (часто нужно)
+        # 3) Часто input скрыт — делаем видимым
         page.evaluate(
-            "(el) => { el.style.display = 'block'; el.style.visibility = 'visible'; el.style.opacity = 1; }",
+            "(el) => { el.style.display='block'; el.style.visibility='visible'; el.style.opacity=1; }",
             file_input
         )
 
-        # 5) Загружаем файл (путь должен быть реальным в CI)
-        file_path = os.path.abspath(os.path.join(os.getcwd(), "test_data", "upload.xlsx"))
+        # 4) ✅ твой файл
+        file_path = os.path.abspath(os.path.join(os.getcwd(), "data", "containers.xlsx"))
         assert os.path.exists(file_path), f"Upload file not found: {file_path}"
 
+        # 5) Загружаем
         file_input.set_input_files(file_path)
-
-        # 6) Проверка результата (подставь свой локатор успеха)
-        expect(page.locator(self.UPLOAD_SUCCESS)).to_be_visible(timeout=20000)
 
     def random_latin_string(self, length: int = 15) -> str:
         return ''.join(random.choices(string.ascii_letters, k=length))

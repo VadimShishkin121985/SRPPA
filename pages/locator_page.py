@@ -30,6 +30,7 @@ class LocatorsPage():
     MAP_PREBOOK_PAGE = ".maplibregl-canvas"
     RQ_CARGO_DETAILS_LOCATOR = "h1:text-is('Cargo details')"
     UPLOAD_FILE_MENU_CT = "[data-test-id='upload-file-button']"
+    UPLOAD_FILE_INPUT = "input[type='file'][accept*='spreadsheetml.sheet']"
     EMPTY_TEMPLATE = "[data-test-id='upload-file-empty-template-link']"
     UPLOAD_FILE_CT = "[data-test-id='upload-file-button']"
     NEXT_BUTTON_UPLOAD_FILE = "button:text-is('Next')"
