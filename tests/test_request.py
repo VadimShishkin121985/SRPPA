@@ -22,3 +22,9 @@ class Test_Request:
         # Можно добавить assert, если есть уникальный элемент после отправки
         # например:
         # assert self.page.locator(".cJg5n").is_visible()
+
+    def test_send_default_request_it_quote(self, pages):
+        pages["main"].click_on_sign_in_button()
+        pages["signin"].sign_in_form()
+        pages["main"].go_to_request_it_quota()
+        pages["request"].request_it_quote()

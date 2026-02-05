@@ -63,6 +63,7 @@ class LocatorsPage():
     CONTENT_CALENDAR_TAB = "[class^='fc-daygrid-day-frame']"
     MAP_TAB_BOTTON = "span:text-is('Map')"
     DAILY_LIMIT_MODAL_TS = '.unified-tracking-xrU1A1'
+    REQUEST_IT_QUOTE = "//div[@class='dropMenu__content js-drop-content']//span[@class='dropMenu__text_tools'][normalize-space()='Request an IT quote']"
 
 
     HS_CODE_REQUEST = ".a3RkC"

@@ -1,3 +1,4 @@
+from time import sleep
 
 from pages.base_page import BasePage
 from pages.locator_page import LocatorsPage
@@ -78,3 +79,28 @@ class RequestAQuote(LocatorsPage, BasePage):
 
         # Ждём подтверждения
         expect(self.page.locator("#request_a_quote")).to_be_visible(timeout=50000)
+
+
+    def request_it_quote(self):
+        # выбор тулзы
+        expect(self.page.locator("input[aria-label='toolInfo.tool']")).to_be_visible()
+        self.page.locator("input[aria-label='toolInfo.tool']").click()
+        self.page.get_by_label("select-body").get_by_text("Container Tracking", exact=True).click()
+        # выбор типа реквеста
+        self.page.locator("input[aria-label='toolInfo.requestType']").click()
+        self.page.get_by_label("select-body").get_by_text("API", exact=True).click()
+        #количество реквестов
+        self.page.fill("input.request-it-quote-coERK4[type='number'][placeholder='0']", "1000")
+        self.page.locator("input.request-it-quote-coERK4[type='number'][placeholder='0']").nth(1).fill("1000")
+
+        self.page.get_by_text("Container number", exact=True).click()
+
+
+        self.page.fill(".request-it-quote-INW0I3", "test")
+
+        self.page.get_by_role("button", name="Send").click()
+
+        expect(self.page.get_by_role("button", name="Go to main page")).to_be_visible(timeout=50000)
+
+
+        pass

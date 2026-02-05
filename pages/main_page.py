@@ -32,3 +32,13 @@ class MainPage(BasePage, LocatorsPage):
         self.click_on_sign_in_button()
         SignInPage(self.page).sign_in_form()
         self.go_to_container_tracking_app()
+
+    def go_to_request_it_quota(self):
+        page = self.page
+        tools = page.locator(self.MENU_TOOLS)
+        expect(tools).to_be_visible(timeout=10000)
+        tools.hover()
+        self._safe_click(self.REQUEST_IT_QUOTE, timeout=30000)
+        expect(
+            page.locator(self.REQUEST_IT_QUOTE)
+        ).to_be_visible(timeout=15000)
