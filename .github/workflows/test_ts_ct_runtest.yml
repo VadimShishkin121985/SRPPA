@@ -111,6 +111,13 @@ jobs:
           name: failed-test-screenshots
           path: screenshots
           retention-days: 2
+      - name: Upload downloads
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: downloads
+          path: downloads
+          retention-days: 2
 
       # Проверяем, что результаты созданы
       - name: List allure-results content

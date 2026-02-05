@@ -86,29 +86,39 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         return new_page
 
     def download_file(self):
-        downloads_dir = "/Users/Vadim/PycharmProjects/SRPPA/downloads"
+        # ✅ кроссплатформенно: папка downloads рядом с проектом (где запускается pytest)
+        downloads_dir = os.path.abspath(os.path.join(os.getcwd(), "downloads"))
+        os.makedirs(downloads_dir, exist_ok=True)
+
+        # ✅ чистим папку если накопилось >= 200 файлов
         if os.path.exists(downloads_dir) and len(os.listdir(downloads_dir)) >= 200:
             shutil.rmtree(downloads_dir)
             os.makedirs(downloads_dir, exist_ok=True)
 
+        # ✅ ждём download
         with self.page.expect_download() as download_info:
             self.page.click(self.UPLOAD_FILE_MENU_CT)
             self.page.click(self.EMPTY_TEMPLATE)
+
         download = download_info.value
 
-        base_name = download.suggested_filename
+        base_name = download.suggested_filename or "download.bin"
         name, ext = os.path.splitext(base_name)
-        save_path = os.path.join(downloads_dir, base_name)
-        sleep(10)
 
-        # если файл уже существует → добавляем суффикс
+        # ✅ если файл уже существует → добавляем суффикс
+        save_path = os.path.join(downloads_dir, base_name)
         counter = 1
         while os.path.exists(save_path):
             save_path = os.path.join(downloads_dir, f"{name}_{counter}{ext}")
             counter += 1
+
+        # ❌ sleep(10) не нужен — save_as сам дождётся артефакта
         download.save_as(save_path)
+
         assert os.path.exists(save_path), f"Файл не найден: {save_path}"
         assert os.path.getsize(save_path) > 0, f"Файл пустой: {save_path}"
+
+        print(f"✅ Download saved: {save_path}")
 
     def upload_test_file(self):
         file_path = "/Users/Vadim/PycharmProjects/SRPPA/data/containers.xlsx"
