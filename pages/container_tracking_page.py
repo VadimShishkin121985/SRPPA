@@ -121,24 +121,34 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         print(f"✅ Download saved: {save_path}")
 
     def upload_test_file(self):
-        file_path = "/Users/Vadim/PycharmProjects/SRPPA/data/containers.xlsx"
+        page = self.page
 
-        # Клик по меню, если нужно открыть форму загрузки
-        self.page.click(self.UPLOAD_FILE_MENU_CT)
+        # 1) Открываем меню/модалку Upload (подставь свои локаторы)
+        page.click(self.UPLOAD_FILE_MENU_CT)
+        expect(page.locator(self.UPLOAD_MODAL)).to_be_visible(timeout=10000)  # если есть
 
-        # Загружаем файл напрямую в скрытый input
-        self.page.set_input_files(
-            "input[type='file'][accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']",
-            file_path
+        # 2) Берём input file как locator (НЕ page.set_input_files)
+        file_input = page.locator(
+            "input[type='file'][accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']"
+        ).first
+
+        # 3) Ждём что он хотя бы есть в DOM
+        expect(file_input).to_be_attached(timeout=10000)
+
+        # 4) Если он скрыт — делаем его видимым через JS (часто нужно)
+        page.evaluate(
+            "(el) => { el.style.display = 'block'; el.style.visibility = 'visible'; el.style.opacity = 1; }",
+            file_input
         )
 
-        # Ассерт: кнопка с текстом файла существует (видимость не важна)
-        file_name = os.path.basename(file_path)
-        uploaded_file_button = self.page.locator(f"button:has-text('{file_name}')")
-        assert uploaded_file_button.count() > 0, f"Кнопка с файлом {file_name} не найдена"
+        # 5) Загружаем файл (путь должен быть реальным в CI)
+        file_path = os.path.abspath(os.path.join(os.getcwd(), "test_data", "upload.xlsx"))
+        assert os.path.exists(file_path), f"Upload file not found: {file_path}"
 
-        self.page.click(self.NEXT_BUTTON_UPLOAD_FILE)
-        expect (self.page.locator(self.SUCCESFULLY_UPLOAD_FILE)).to_be_visible(timeout=500000)
+        file_input.set_input_files(file_path)
+
+        # 6) Проверка результата (подставь свой локатор успеха)
+        expect(page.locator(self.UPLOAD_SUCCESS)).to_be_visible(timeout=20000)
 
     def random_latin_string(self, length: int = 15) -> str:
         return ''.join(random.choices(string.ascii_letters, k=length))
