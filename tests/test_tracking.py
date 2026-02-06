@@ -42,16 +42,10 @@ class Test_Tracking:
 
 
     def test_the_update_button_in_the_list(self, pages):
-        """
-        Нажатие кнопки обновления в списке.
-        """
         pages["main"].go_to_ct_app_with_aut()
         pages["ct"].update_button_click()
 
     def test_saving_number(self, pages):
-        """
-        Сохранение номера в контейнерном приложении.
-        """
         pages["main"].go_to_ct_app_with_aut()
         pages["ct"].fill_input_ct_number()
         pages["ct"].click_search_button_ct_app()

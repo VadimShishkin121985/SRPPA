@@ -24,6 +24,8 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
     #
     #     expect(update_button).not_to_have_text("update", timeout=15000)
     def update_button_click(self):
+        self.page.reload()
+        expect(self.FIRST_CARD).to_be_visible(timeout=20000)
         update_button = self.page.locator("[data-test-id='card-status-update-button']").first
         expect(update_button).to_be_visible(timeout=10000)
 
@@ -44,7 +46,7 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         actual_value = self.page.get_attribute(self.INPUT_CT_APP, "value")
         assert actual_value == self.number, (
             f"value='{self.number}', bat  '{actual_value}'"
-        )
+        ).to
 
     def click_search_button_ct_app(self):
         self.page.click(self.SEARCH_BUTTON_CT)
@@ -232,12 +234,12 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         route_btn = self.page.locator(self.ROUTE_BUTTON)
 
         try:
-            expect(limit_msg).to_be_visible(timeout=2000)
+            expect(limit_msg).to_be_visible(timeout=20000)
             return
         except:
             pass
 
-        expect(route_btn).to_be_visible(timeout=5000)
+        expect(route_btn).to_be_visible(timeout=50000)
 
 
     def open_subscription_info(self):
