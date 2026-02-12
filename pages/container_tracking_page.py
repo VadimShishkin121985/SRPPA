@@ -25,17 +25,25 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
     #     expect(update_button).not_to_have_text("update", timeout=15000)
     def update_button_click(self):
         self.page.reload()
-        expect(self.FIRST_CARD).to_be_visible(timeout=20000)
-        update_button = self.page.locator("[data-test-id='card-status-update-button']").first
+
+        # 1) Ждём, что карточки реально появились
+        cards = self.page.locator("[data-test-id^='card-action-open']")
+        expect(cards.first).to_be_visible(timeout=20000)
+
+        # 2) Берём первую карточку как контейнер (стабильнее, чем искать по всей странице)
+        first_card = cards.first.locator("xpath=ancestor::div[.//div[@data-test-id='card-number']]")
+
+        # 3) Внутри этой карточки ищем кнопку update
+        update_button = first_card.locator("[data-test-id='card-status-update-button']")
         expect(update_button).to_be_visible(timeout=10000)
 
-        card = update_button.locator("xpath=ancestor::div[.//div[@data-test-id='card-number']]")
-        card_number = card.locator("[data-test-id='card-number']").first.inner_text()
+        card_number = first_card.locator("[data-test-id='card-number']").inner_text()
         print(f"Updating card: {card_number}")
 
         update_button.click()
 
-        status = card.locator(
+        # 4) Ждём статус внутри этой же карточки (кроме самой кнопки update)
+        status = first_card.locator(
             "[data-test-id^='card-status-']:not([data-test-id='card-status-update-button'])"
         ).first
         expect(status).to_be_visible(timeout=20000)
