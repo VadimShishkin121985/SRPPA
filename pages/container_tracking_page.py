@@ -26,34 +26,31 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
     def update_button_click(self):
         self.page.reload()
 
-        # 1) Ждём, что список карточек вообще появился
-        cards = self.page.locator("[data-test-id^='card-action-open']")
-        expect(cards.first).to_be_visible(timeout=20000)
+        # ждём наличие хотя бы одной update-кнопки (значит есть карточка со статусом Update)
+        update_button = self.page.locator("[data-test-id='card-status-update-button']").first
+        expect(update_button).to_be_visible(timeout=20000)
 
-        # 2) Находим ПЕРВУЮ карточку, где есть кнопка Update
-        update_buttons = self.page.locator("[data-test-id='card-status-update-button']")
-        expect(update_buttons.first).to_be_visible(timeout=20000)  # есть хотя бы одна
-
-        update_button = update_buttons.first
-
-        # 3) Поднимаемся к контейнеру именно этой карточки (ближайший предок с card-number)
+        # берём карточку-контейнер вокруг этой кнопки (ближайший предок, где есть номер)
         card = update_button.locator("xpath=ancestor::*[.//div[@data-test-id='card-number']][1]")
-
-        card_number = card.locator("[data-test-id='card-number']").first.inner_text()
+        card_number = card.locator("[data-test-id='card-number']").first.inner_text().strip()
         print(f"Updating card: {card_number}")
 
-        # 4) Если иногда открыто меню сервисов — закрываем
         self.page.keyboard.press("Escape")
-
-        # 5) Жмём update
-        expect(update_button).to_be_enabled(timeout=10000)
         update_button.click()
 
-        # 6) Ждём, что появился/обновился статус внутри этой же карточки
-        status = card.locator(
-            "[data-test-id^='card-status-']:not([data-test-id='card-status-update-button'])"
-        ).first
-        expect(status).to_be_visible(timeout=20000)
+        # важно: после клика DOM может перерисоваться, поэтому заново находим карточку по номеру
+        card_by_number = self.page.locator(
+            f"xpath=//div[@data-test-id='card-number' and contains(normalize-space(.), '{card_number}')]/ancestor::*[1]"
+        )
+
+        # 1) кнопка update исчезла
+        expect(card_by_number.locator("[data-test-id='card-status-update-button']")).to_have_count(0, timeout=20000)
+
+        # 2) появился новый статус (любой card-status-*, например card-status-in_transit)
+        new_status = card_by_number.locator("[data-test-id^='card-status-']").first
+        expect(new_status).to_be_visible(timeout=20000)
+
+        print("New status:", new_status.get_attribute("data-test-id"), "|", new_status.inner_text().strip())
 
     def fill_input_ct_number(self):
         self.number = self.get_random_tracking_number()
