@@ -26,24 +26,31 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
     def update_button_click(self):
         self.page.reload()
 
-        # 1) Ждём, что карточки реально появились
+        # 1) Ждём, что список карточек вообще появился
         cards = self.page.locator("[data-test-id^='card-action-open']")
         expect(cards.first).to_be_visible(timeout=20000)
 
-        # 2) Берём первую карточку как контейнер (стабильнее, чем искать по всей странице)
-        first_card = cards.first.locator("xpath=ancestor::div[.//div[@data-test-id='card-number']]")
+        # 2) Находим ПЕРВУЮ карточку, где есть кнопка Update
+        update_buttons = self.page.locator("[data-test-id='card-status-update-button']")
+        expect(update_buttons.first).to_be_visible(timeout=20000)  # есть хотя бы одна
 
-        # 3) Внутри этой карточки ищем кнопку update
-        update_button = first_card.locator("[data-test-id='card-status-update-button']")
-        expect(update_button).to_be_visible(timeout=10000)
+        update_button = update_buttons.first
 
-        card_number = first_card.locator("[data-test-id='card-number']").inner_text()
+        # 3) Поднимаемся к контейнеру именно этой карточки (ближайший предок с card-number)
+        card = update_button.locator("xpath=ancestor::*[.//div[@data-test-id='card-number']][1]")
+
+        card_number = card.locator("[data-test-id='card-number']").first.inner_text()
         print(f"Updating card: {card_number}")
 
+        # 4) Если иногда открыто меню сервисов — закрываем
+        self.page.keyboard.press("Escape")
+
+        # 5) Жмём update
+        expect(update_button).to_be_enabled(timeout=10000)
         update_button.click()
 
-        # 4) Ждём статус внутри этой же карточки (кроме самой кнопки update)
-        status = first_card.locator(
+        # 6) Ждём, что появился/обновился статус внутри этой же карточки
+        status = card.locator(
             "[data-test-id^='card-status-']:not([data-test-id='card-status-update-button'])"
         ).first
         expect(status).to_be_visible(timeout=20000)
