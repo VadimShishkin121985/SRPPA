@@ -59,3 +59,14 @@ class BasePage:
         except Exception:
             # 🔥 если перехватывают pointer events — кликаем событием по элементу
             chosen.dispatch_event("click")
+
+    def prepare_for_hover(self):
+        self.page.keyboard.press("Escape")
+
+        vp = self.page.viewport_size or {"width": 1280, "height": 720}
+        safe_x, safe_y = 10, vp["height"] - 10
+
+        self.page.mouse.click(safe_x, safe_y)
+        self.page.mouse.move(safe_x, safe_y)
+
+        self.page.wait_for_timeout(50)

@@ -231,8 +231,12 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
 
     def click_on_the_point(self):
         sleep(2)
-        self.page.hover(self.POINT_ON_MAP)
-        self.page.click(self.POINT_ON_MAP)
+        self.prepare_for_hover()
+
+        marker = self.page.locator(self.POINT_ON_MAP).first
+        marker.scroll_into_view_if_needed()
+        marker.hover()
+        marker.click()
 
     def hover_and_click_on_container_in_point(self):
         self.page.hover(self.CONTAINER_NUMBER_POINT)
