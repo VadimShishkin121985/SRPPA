@@ -198,6 +198,20 @@ jobs:
           ❌ Failed: $FAILED
           ⏭️ Skipped: $SKIPPED
           📈 Pass Rate: ${PASS_RATE}%
+          
+          
+          if [ -n "$FAILED_TESTS" ]; then
+          MESSAGE="${MESSAGE}
+          ❌ Failed Tests:"
+            while IFS= read -r test; do
+              MESSAGE="${MESSAGE}
+          - \`${test}\`"
+            done <<< "$FAILED_TESTS"
+          fi
+          
+          
+          
+          MESSAGE="${MESSAGE}
           🔗 [View Report](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
 
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
