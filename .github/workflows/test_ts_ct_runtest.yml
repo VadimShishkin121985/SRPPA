@@ -197,11 +197,10 @@ jobs:
           ✅ Passed: $PASSED
           ❌ Failed: $FAILED
           ⏭️ Skipped: $SKIPPED
-          📈 Pass Rate: ${PASS_RATE}%
-          
+          📈 Pass Rate: ${PASS_RATE}%"
           
           if [ -n "$FAILED_TESTS" ]; then
-          MESSAGE="${MESSAGE}
+            MESSAGE="${MESSAGE}
           ❌ Failed Tests:"
             while IFS= read -r test; do
               MESSAGE="${MESSAGE}
