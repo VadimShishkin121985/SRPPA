@@ -196,8 +196,8 @@ jobs:
             fi
       
             FAILED_TESTS=$(
-              xmllint --xpath "//testcase[failure or error]" "$JUNIT_FILE" 2>/dev/null |
-              sed -nE 's/.*classname="([^"]+)".*name="([^"]+)".*/\1.\2/p'
+              xmllint --xpath "//testcase[failure or error]/@name" "$JUNIT_FILE" 2>/dev/null |
+              sed -E 's/name="([^"]+)"/\1\n/g'
             )
           else
             TOTAL=0
