@@ -3,10 +3,13 @@ import os
 
 import pytest
 from playwright.sync_api import sync_playwright
+
+from pages.ai_assistant_vo_page import AIAssistant
 from pages.main_page import MainPage
 from pages.request_app_page import RequestAQuote
 from pages.sign_in_page import SignInPage
 from pages.container_tracking_page import ContainerTrackingPage
+from pages.virtual_office import VirtualOffice
 
 BASE_URL = "https://www.searates.com/"  # замени на свой URL
 
@@ -64,7 +67,9 @@ def pages(page):
         "main": MainPage(page),
         "signin": SignInPage(page),
         "ct": ContainerTrackingPage(page),
-        "request": RequestAQuote(page)
+        "request": RequestAQuote(page),
+        "virtual_office": VirtualOffice(page),
+        "ai_assistant": AIAssistant(page)
     }
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)
 def pytest_runtest_makereport(item, call):
