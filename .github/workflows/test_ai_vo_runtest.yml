@@ -1,0 +1,255 @@
+name: Test AI VO
+
+#on:
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches:
+#      - main
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Select test suite'
+        required: true
+        type: choice
+        options:
+          - Tracking
+          - Regression
+        default: Tracking
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  CI: true  # Важно для Playwright headless
+
+jobs:
+# =========================================================
+# 🧪 TEST JOB
+# =========================================================
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest-rerunfailures webdriver-manager lxml
+          pip install playwright allure-pytest
+
+      - name: Install Playwright browsers
+        run: playwright install --with-deps
+
+      # Подготовка истории (даже пустой)
+      - name: Prepare allure-results/history folder
+        run: mkdir -p allure-results/history
+
+      # Скачиваем прошлую историю (если есть)
+      - name: Download Allure history
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-history
+          path: allure-results/history
+        continue-on-error: true
+
+      # Создаём папку для результатов на всякий случай
+      - name: Ensure allure-results folder exists
+        run: mkdir -p allure-results
+
+      - name: Random delay before tests (anti-cloudflare)
+        run: |
+          DELAY=$((RANDOM % 40 + 20))
+          echo "Sleeping for $DELAY seconds before tests..."
+          sleep $DELAY  
+
+      # ================= Запуск тестов =================
+      - name: Create screenshots folder
+        run: mkdir -p screenshots
+      - name: Run tests
+        run: |
+          echo "Selected test suite: ${{ github.event.inputs.test_suite }}"
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            if [[ "${{ github.event.inputs.test_suite }}" == "Regression" ]]; then
+              TEST_FILE="tests/test_regression.py"
+            else
+              TEST_FILE="tests/test_ai_assistance.py"
+            fi
+          else
+            TEST_FILE="tests/test_ai_assistance.py"
+          fi
+
+          echo "Running tests from: $TEST_FILE"
+          pytest $TEST_FILE \
+            --disable-warnings \
+            -v \
+            --alluredir=allure-results \
+            --junitxml=allure-results/junit.xml || true
+        env:
+          TEST_ACCOUNT_LOGIN: ${{ secrets.TEST_ACCOUNT_LOGIN }}
+          TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
+          TEST_CT_NUMBER: ${{ secrets.TEST_CT_NUMBER }}
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-test-screenshots
+          path: screenshots
+          retention-days: 2
+      - name: Upload downloads
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: downloads
+          path: downloads
+          retention-days: 2
+
+      # Проверяем, что результаты созданы
+      - name: List allure-results content
+        run: ls -R allure-results
+
+      # Загружаем историю и результаты
+      - name: Upload Allure history
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-history
+          path: allure-results/history
+          retention-days: 10
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+
+# =========================================================
+# 📊 REPORT + TELEGRAM
+# =========================================================
+  report:
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: 17
+
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      - name: Install Allure
+        run: |
+          wget https://github.com/allure-framework/allure2/releases/download/2.25.0/allure-2.25.0.tgz
+          tar -xzf allure-2.25.0.tgz
+          sudo mv allure-2.25.0 /opt/allure
+          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+
+      - name: Generate Allure report
+        run: |
+          allure generate allure-results -o _site --clean
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      # ================= Telegram уведомление =================
+      - name: Send Telegram report
+        if: always()
+        run: |
+          JUNIT_FILE="allure-results/junit.xml"
+      
+          if [ -f "$JUNIT_FILE" ]; then
+            TOTAL=$(xmllint --xpath "count(//testcase)" "$JUNIT_FILE")
+            FAILED=$(xmllint --xpath "count(//testcase[failure or error])" "$JUNIT_FILE")
+            SKIPPED=$(xmllint --xpath "count(//testcase[skipped])" "$JUNIT_FILE")
+            PASSED=$((TOTAL - FAILED - SKIPPED))
+      
+            if [ "$TOTAL" -gt 0 ]; then
+              PASS_RATE=$(awk "BEGIN { printf \"%.2f\", ($PASSED/$TOTAL)*100 }")
+            else
+              PASS_RATE="0.00"
+            fi
+      
+            FAILED_TESTS=$(
+              xmllint --xpath "//testcase[failure or error]/@name" "$JUNIT_FILE" 2>/dev/null |
+              sed -E 's/name="([^"]+)"/\1\n/g'
+            )
+          else
+            TOTAL=0
+            PASSED=0
+            FAILED=0
+            SKIPPED=0
+            PASS_RATE="0.00"
+            FAILED_TESTS=""
+          fi
+
+
+          MESSAGE="📊 *AI VO*
+          Total Tests: $TOTAL
+          ✅ Passed: $PASSED
+          ❌ Failed: $FAILED
+          ⏭️ Skipped: $SKIPPED
+          📈 Pass Rate: ${PASS_RATE}%"
+          
+              if [ -n "$FAILED_TESTS" ]; then
+                MESSAGE="${MESSAGE}
+          ❌ Failed Tests:"
+          
+                while IFS= read -r test; do
+                  if [ -n "$test" ]; then
+                    MESSAGE="${MESSAGE}
+          - \`${test}\`"
+                  fi
+                done <<< "$FAILED_TESTS"
+              fi
+          
+          
+          
+          MESSAGE="${MESSAGE}
+          🔗 [View Report](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
+      
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            --data-urlencode chat_id="${TELEGRAM_CHAT_SRA_ID}" \
+            --data-urlencode text="$MESSAGE" \
+            --data-urlencode parse_mode="Markdown"
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_SRA_ID: ${{ secrets.TELEGRAM_CHAT_SRA_ID }}
+
+# =========================================================
+# 🚀 PUBLISH TO GITHUB PAGES
+# =========================================================
+  publish:
+    needs: report
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

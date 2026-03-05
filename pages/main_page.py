@@ -42,3 +42,11 @@ class MainPage(BasePage, LocatorsPage):
         expect(
             page.locator(self.REQUEST_IT_QUOTE)
         ).to_be_visible(timeout=15000)
+
+    def go_to_virtual_office(self):
+        self.click_on_sign_in_button()
+        SignInPage(self.page).sign_in_form()
+        self.page.locator(self.USER_LOGO).first.click()
+        self.page.locator(self.USER_INFO).first.click()
+        expect(self.page.locator(self.AI_ASSISTANT)).to_be_visible(timeout=30000)
+

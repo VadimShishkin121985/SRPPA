@@ -65,11 +65,22 @@ class LocatorsPage():
     DAILY_LIMIT_MODAL_TS = '.unified-tracking-xrU1A1'
     REQUEST_IT_QUOTE = "//div[@class='dropMenu__content js-drop-content']//span[@class='dropMenu__text_tools'][normalize-space()='Request an IT quote']"
 
-
     HS_CODE_REQUEST = ".a3RkC"
-
 
     SERVICES_DROPDOWN = "css=div.drop-services__content"   # контейнер services-меню
     REFERENCES_ACTIVE_SECTION = "css=div[data-dropdown='references'].dropMenu__section_active"
     SERVICES_ACTIVE_SECTION = "css=div[data-dropdown='services'].dropMenu__section_active"  # если есть
     TOOLS_SECTION_ACTIVE = "css=div[data-dropdown='tools'].dropMenu__section_active"
+
+
+    USER_LOGO = ".navbarDropdown__button"
+    USER_INFO = ".nv-profile__header-profile"
+    AI_ASSISTANT = "//span[normalize-space()='AI Assistant']"
+    NEW_CHAT = ".ai-assistant-PylgYz"
+    CT_QUICK_BUTTON = "li:has-text('Where is my container?')"
+    DT_QUICK_BUTTON = "li:has-text('What is the distance and transit time?')"
+    LE_QUICK_BUTTON = "li:has-text('What is the freight rate?')"
+    CO2_QUICK_BUTTON = "li:has-text('What are the CO₂ emissions?')"
+    SS_QUICK_BUTTON = "li:has-text('What is the schedule for a vessel?')"
+    FI_QUICK_BUTTON = "li:has-text('What is the freight index?')"
+    NEW_CHAT_BUTTON = "span:has-text('New chat')"
