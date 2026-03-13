@@ -1,5 +1,6 @@
 from time import sleep
-
+import os
+import re
 from pages.base_page import BasePage
 from pages.locator_page import LocatorsPage
 from playwright.sync_api import expect
@@ -43,7 +44,7 @@ class RequestAQuote(LocatorsPage, BasePage):
 
         # HS Code
         self.page.click(self.HS_CODE_REQUEST)
-        self.page.keyboard.type("090611")  # вместо fill
+        self.page.keyboard.type("090611")
         self.page.locator(".cg_b7", has_text="090611").first.click()
 
         # Вес
@@ -74,33 +75,76 @@ class RequestAQuote(LocatorsPage, BasePage):
         # Additional information
         self.page.fill(".textarea__element", "Test")
 
-        # Отправка запроса
+        # Send
         self.page.locator(".PfDxg", has_text="Send").first.click()
 
-        # Ждём подтверждения
-        expect(self.page.locator("#request_a_quote")).to_be_visible(timeout=50000)
+        # Ждём номер реквеста
+        request_title = self.page.locator("h2", has_text="Request")
+        expect(request_title).to_be_visible(timeout=50000)
+
+        request_text = request_title.inner_text()
+
+        match = re.search(r"\d+", request_text)
+        if not match:
+            raise AssertionError(f"Request number not found: {request_text}")
+
+        request_number = match.group()
+
+        # сохраняем номер
+        with open("created_requests.txt", "a", encoding="utf-8") as f:
+            f.write(f"{request_number}\n")
+
+        print(f"RaQ: {request_number}")
+
+        return request_number
 
 
     def request_it_quote(self):
+        """Создание IT Quote с сохранением номера реквеста в отдельный файл"""
+
         # выбор тулзы
         expect(self.page.locator("input[aria-label='toolInfo.tool']")).to_be_visible()
         self.page.locator("input[aria-label='toolInfo.tool']").click()
         self.page.get_by_label("select-body").get_by_text("Container Tracking", exact=True).click()
+
         # выбор типа реквеста
         self.page.locator("input[aria-label='toolInfo.requestType']").click()
         self.page.get_by_label("select-body").get_by_text("API", exact=True).click()
-        #количество реквестов
+
+        # количество реквестов
         self.page.fill("input.request-it-quote-coERK4[type='number'][placeholder='0']", "1000")
         self.page.locator("input.request-it-quote-coERK4[type='number'][placeholder='0']").nth(1).fill("1000")
 
+        # параметр запроса
         self.page.get_by_text("Container number", exact=True).click()
-
-
         self.page.fill(".request-it-quote-INW0I3", "test")
 
+        # отправка
         self.page.get_by_role("button", name="Send").click()
 
+        # ждём успех
         expect(self.page.get_by_role("button", name="Go to main page")).to_be_visible(timeout=50000)
 
+        # ждём заголовок с номером IT request
+        request_title = self.page.locator("h1.request-it-quote-gQVYW8")
+        expect(request_title).to_be_visible(timeout=50000)
 
-        pass
+        request_text = request_title.inner_text().strip()
+        # например: "Request № 432679"
+
+        match = re.search(r"\d+", request_text)
+        if not match:
+            raise AssertionError(f"Не удалось найти IT request number в тексте: {request_text}")
+
+        request_number = match.group()
+
+        # создаём папку reports если её нет
+        os.makedirs("reports", exist_ok=True)
+
+        # сохраняем в отдельный файл
+        with open("reports/created_it_requests.txt", "a", encoding="utf-8") as f:
+            f.write(f"{request_number}\n")
+
+        print(f"Request IT created: {request_number}")
+
+        return request_number

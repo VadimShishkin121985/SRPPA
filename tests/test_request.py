@@ -1,3 +1,5 @@
+from time import sleep
+
 import pytest
 
 from pages.main_page import MainPage
@@ -22,6 +24,7 @@ class Test_Request:
         # Можно добавить assert, если есть уникальный элемент после отправки
         # например:
         # assert self.page.locator(".cJg5n").is_visible()
+        sleep(10)
 
     def test_send_default_request_it_quote(self, pages):
         pages["main"].click_on_sign_in_button()
