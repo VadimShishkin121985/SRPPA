@@ -223,18 +223,18 @@ jobs:
 
           # ================= Requests =================
           if [ -f reports/created_requests.txt ] && [ -s reports/created_requests.txt ]; then
-            REQUESTS=$(sed 's/^/• /' reports/created_requests.txt)
-            REQUEST_BLOCK=$'\n📦 Requests:\n'"$REQUESTS"
+            REQUESTS=$(paste -sd ", " reports/created_requests.txt)
+            REQUEST_BLOCK=$'\n📦 Requests: '"$REQUESTS"
           else
-            REQUEST_BLOCK=$'\n📦 Requests:\n• none'
+            REQUEST_BLOCK=$'\n📦 Requests: none'
           fi
 
           # ================= IT Requests =================
           if [ -f reports/created_it_requests.txt ] && [ -s reports/created_it_requests.txt ]; then
-            IT_REQUESTS=$(sed 's/^/• /' reports/created_it_requests.txt)
-            IT_REQUEST_BLOCK=$'\n💻 IT Requests:\n'"$IT_REQUESTS"
+            IT_REQUESTS=$(paste -sd ", " reports/created_it_requests.txt)
+            IT_REQUEST_BLOCK=$'\n💻 IT Requests: '"$IT_REQUESTS"
           else
-            IT_REQUEST_BLOCK=$'\n💻 IT Requests:\n• none'
+            IT_REQUEST_BLOCK=$'\n💻 IT Requests: none'
           fi
 
           MESSAGE="📊 *Request APP*

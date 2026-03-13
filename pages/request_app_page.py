@@ -40,7 +40,7 @@ class RequestAQuote(LocatorsPage, BasePage):
         self._safe_click(self.REQUEST_A_QUOTE_MENU, timeout=30000)
 
     def send_default_request(self):
-        """Отправка стандартного запроса с заполнением всех полей"""
+        """Отправка стандартного запроса и сохранение номера request"""
 
         # HS Code
         self.page.click(self.HS_CODE_REQUEST)
@@ -78,23 +78,23 @@ class RequestAQuote(LocatorsPage, BasePage):
         # Send
         self.page.locator(".PfDxg", has_text="Send").first.click()
 
-        # Ждём номер реквеста
+        # Ждём заголовок
         request_title = self.page.locator("h2", has_text="Request")
         expect(request_title).to_be_visible(timeout=50000)
 
-        request_text = request_title.inner_text()
+        request_text = request_title.inner_text().strip()
 
         match = re.search(r"\d+", request_text)
         if not match:
-            raise AssertionError(f"Request number not found: {request_text}")
+            raise AssertionError(f"Request number not found in text: {request_text}")
 
         request_number = match.group()
 
-        # сохраняем номер
-        with open("created_requests.txt", "a", encoding="utf-8") as f:
+        os.makedirs("reports", exist_ok=True)
+        with open("reports/created_requests.txt", "a", encoding="utf-8") as f:
             f.write(f"{request_number}\n")
 
-        print(f"RaQ: {request_number}")
+        print(f"Request created: {request_number}")
 
         return request_number
 
