@@ -6,6 +6,7 @@ from pages.locator_page import LocatorsPage
 from playwright.sync_api import expect
 import os
 import shutil
+import re
 
 
 class ContainerTrackingPage(BasePage, LocatorsPage):
@@ -263,19 +264,37 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         expect(self.page.locator(self.PAID_PLAN)).to_be_visible(timeout=500000)
 
     def check_credit_counter(self):
-        counter_before = self.page.locator(self.CREDITS_USED).inner_text()
-        print(f"📊 Кредитів ДО пошуку: {counter_before}")
+        # Зчитуємо значення ДО пошуку
+        counter_before_text = self.page.locator(self.CREDITS_USED).inner_text().strip()
+        print(f"📊 Кредитів ДО пошуку: {counter_before_text}")
+
+        # Витягуємо число
+        counter_before = int(re.search(r"\d+", counter_before_text).group())
 
         # Виконуємо пошук
         self.fill_input_ct_number()
         self.click_search_button_ct_app()
-        self.page.reload()
 
-        # Чекаємо оновлення лічильника (можливо потрібна затримка)
+        # Перезавантажуємо сторінку
+        self.page.reload()
         sleep(2)
 
         # Відкриваємо інфо про підписку
         self.open_subscription_info()
+        sleep(2)
+
+        # Зчитуємо значення ПІСЛЯ пошуку
+        counter_after_text = self.page.locator(self.CREDITS_USED).inner_text().strip()
+        print(f"📊 Кредитів ПІСЛЯ пошуку: {counter_after_text}")
+
+        # Витягуємо число
+        counter_after = int(re.search(r"\d+", counter_after_text).group())
+
+        # Перевіряємо, що лічильник змінився
+        assert counter_after > counter_before, (
+            f"Лічильник кредитів не збільшився: "
+            f"було {counter_before}, стало {counter_after}"
+        )
 
 
     def purchase_additional_credits(self):
