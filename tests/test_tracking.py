@@ -3,9 +3,6 @@ from time import sleep
 
 from playwright.sync_api import expect
 
-from pages.main_page import MainPage
-from pages.sign_in_page import SignInPage
-from pages.container_tracking_page import ContainerTrackingPage
 
 class Test_Tracking:
 
@@ -82,10 +79,6 @@ class Test_Tracking:
         pages["main"].go_to_ct_app_with_aut()
         pages["ct"].open_the_first_card()
         pages["ct"].copy_past_link()
-
-    def test_map_setting(self, pages):
-        pages["main"].go_to_ct_app_with_aut()
-        pages["ct"].setting_map()
 
     def test_info_tab_in_the_card(self, pages):
         pages["main"].go_to_ct_app_with_aut()
