@@ -58,7 +58,7 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         self.page.fill(self.INPUT_CT_APP, self.number)
         actual_value = self.page.get_attribute(self.INPUT_CT_APP, "value")
         assert actual_value == self.number, (
-            f"value='{self.number}', bat  '{actual_value}'"
+            f"value='{self.number}', but  '{actual_value}'"
         ).to
 
     def click_search_button_ct_app(self):
@@ -333,7 +333,6 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         with self.page.expect_response(lambda r: r.status == 200):
             self.page.click(self.MAP_TAB_BOTTON)
             expect(self.page.locator(self.POINT_ON_MAP).first).to_be_visible(timeout=500000)
-
 
 
 
