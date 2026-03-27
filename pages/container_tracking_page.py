@@ -322,16 +322,19 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
 
     def go_to_notifications_tab(self):
         with self.page.expect_response(lambda r: r.status == 200):
+            self.prepare_for_hover()
             self.page.click(self.NOTIFICATION_TAB_BOTTON)
             expect(self.page.locator(self.CONTENT_NOTIFICATION_TAB).first).to_be_visible(timeout=500000)
 
     def go_to_calendar_tab(self):
         with self.page.expect_response(lambda r: r.status == 200):
+            self.prepare_for_hover()
             self.page.click(self.CALENDAR_TAB_BOTTON)
             expect(self.page.locator(self.CONTENT_CALENDAR_TAB).first).to_be_visible(timeout=500000)
 
     def go_to_map_tab(self):
         with self.page.expect_response(lambda r: r.status == 200):
+            self.prepare_for_hover()
             self.page.click(self.MAP_TAB_BOTTON)
             expect(self.page.locator(self.POINT_ON_MAP).first).to_be_visible(timeout=500000)
 
