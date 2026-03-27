@@ -315,6 +315,7 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
 
     def go_to_analytics_tab(self):
         with self.page.expect_response(lambda r: r.status == 200):
+            self.prepare_for_hover()
             self.page.click(self.ANALYTICS_TAB_BOTTON)
             expect(self.page.locator(self.CONTENT_ANALYTICS_TAB).first).to_be_visible(timeout=500000)
 
