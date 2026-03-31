@@ -69,7 +69,17 @@ class RequestAQuote(LocatorsPage, BasePage):
 
         # Даты
         expect(self.page.locator(".Calendar__day.-today[aria-disabled='false']")).to_be_visible()
-        self.page.locator(".Calendar__day.-today[aria-disabled='false']").click()
+        today_day = self.page.locator(".Calendar__day.-today[aria-disabled='false']")
+        expect(today_day).to_be_visible()
+
+        day_number = int(today_day.inner_text().strip())
+
+        if day_number <= 28:
+            today_day.click()
+        else:
+            self.page.locator(self.NEXT_MONTH_BUTTON).click()
+            self.page.locator(".Calendar__day.-weekend[aria-disabled='false']:not([aria-hidden='true'])").first.click()
+
         self.page.locator(".Calendar__day.-weekend[aria-disabled='false']").first.click()
 
         # Additional information
