@@ -112,3 +112,36 @@ class Test_Tracking:
         pages["ct"].go_to_notifications_tab()
         pages["ct"].go_to_calendar_tab()
         pages["ct"].go_to_map_tab()
+
+
+    def test_air_tracking_app(self, pages):
+        pages["main"].go_to_ts_app_with_aut()
+        pages["ct"].go_to_air_tracking()
+
+    def test_find_air_tracking_number(self, pages):
+        pages["main"].go_to_ts_app_with_aut()
+        pages["ct"].go_to_air_tracking_card()
+
+    def test_rail_tracking_app(self, pages):
+        pages["main"].go_to_ts_app_with_aut()
+        pages["ct"].go_to_rail_tracking_app()
+
+    def test_find_rail_tracking_number(self, pages):
+        pages["main"].go_to_ts_app_with_aut()
+        pages["ct"].go_to_rail_tracking_card()
+
+    def test_road_tracking_app(self, pages):
+        pages["main"].go_to_ts_app_with_aut()
+        pages["ct"].go_to_road_tracking_app()
+
+    def test_find_road_tracking_number(self, pages):
+        pages["main"].go_to_ts_app_with_aut()
+        pages["ct"].go_to_road_tracking_card()
+
+    def test_parcel_tracking_app(self, pages):
+        pages["main"].go_to_ts_app_with_aut()
+        pages["ct"].go_to_parcel_tracking_app()
+
+    def test_find_parcel_tracking_number(self, pages):
+        pages["main"].go_to_ts_app_with_aut()
+        pages["ct"].go_to_parcel_tracking_card()

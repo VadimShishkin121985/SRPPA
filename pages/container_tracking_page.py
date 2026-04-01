@@ -338,11 +338,63 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
             self.page.click(self.MAP_TAB_BOTTON)
             expect(self.page.locator(self.POINT_ON_MAP).first).to_be_visible(timeout=500000)
 
+    def go_to_air_tracking(self):
+        shipment_type = self.page.locator(self.SHIPMENT_TYPE_SELECTOR)
+        self.page.locator(self.ALL_CARRIERS_SELECTOR).click()
+        expect(shipment_type).to_be_visible(timeout=10000)
+        shipment_type.click()
+        self.page.locator(self.SHIPMENT_TYPE_AIR).click()
+        self.page.keyboard.press("Escape")
+        expect(self.page.locator("svg[xmlns='http://www.w3.org/2000/svg']").first).to_be_visible(timeout=10000)
 
+    def go_to_air_tracking_card(self):
+        self.go_to_air_tracking()
+        self.page.fill(self.INPUT_CT_APP, "157-89682003")
+        self.click_search_button_ct_app()
 
+    def go_to_rail_tracking_app(self):
+        shipment_type = self.page.locator(self.SHIPMENT_TYPE_SELECTOR)
+        self.page.locator(self.ALL_CARRIERS_SELECTOR).click()
+        expect(shipment_type).to_be_visible(timeout=10000)
+        shipment_type.click()
+        self.page.locator(self.SHIPMENT_TYPE_RAIL).click()
+        sleep(5)
+        self.page.keyboard.press("Escape")
+        expect(self.page.locator("[data-test-id='pricing-page-link']")).to_be_visible(timeout=10000)
 
+    def go_to_rail_tracking_card(self):
+        self.go_to_rail_tracking_app()
+        self.page.fill(self.INPUT_CT_APP, "TDDW2024100944")
+        self.click_search_button_ct_app()
 
+    def go_to_road_tracking_app(self):
+        shipment_type = self.page.locator(self.SHIPMENT_TYPE_SELECTOR)
+        self.page.locator(self.ALL_CARRIERS_SELECTOR).click()
+        expect(shipment_type).to_be_visible(timeout=10000)
+        shipment_type.click()
+        self.page.locator(self.SHIPMENT_TYPE_ROAD).click()
+        self.page.keyboard.press("Escape")
+        expect(self.page.locator("[data-test-id='request-it-quote-link']")).to_be_visible(timeout=10000)
 
+    def go_to_road_tracking_card(self):
+        self.go_to_rail_tracking_app()
+        self.page.fill(self.INPUT_CT_APP, "20260200102")
+        self.click_search_button_ct_app()
+
+    def go_to_parcel_tracking_app(self):
+        shipment_type = self.page.locator(self.SHIPMENT_TYPE_SELECTOR)
+        self.page.locator(self.ALL_CARRIERS_SELECTOR).click()
+        expect(shipment_type).to_be_visible(timeout=10000)
+        shipment_type.click()
+        self.page.locator(self.SHIPMENT_TYPE_PARCEL).click()
+        self.page.keyboard.press("Escape")
+        expect(self.page.locator("[data-test-id='request-it-quote-link']")).to_be_visible(timeout=10000)
+
+    def go_to_parcel_tracking_card(self):
+        self.go_to_parcel_tracking_app()
+        self.page.fill(self.INPUT_CT_APP, "20451403854361")
+        self.page.click(self.SEARCH_BUTTON_CT)
+        expect(self.page.locator(".unified-tracking-Q6J32l")).to_be_visible(timeout=500000)
 
 
 

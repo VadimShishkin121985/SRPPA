@@ -65,6 +65,13 @@ class LocatorsPage():
     DAILY_LIMIT_MODAL_TS = '.unified-tracking-xrU1A1'
     REQUEST_IT_QUOTE = "//div[@class='dropMenu__content js-drop-content']//span[@class='dropMenu__text_tools'][normalize-space()='Request an IT quote']"
     NEXT_MONTH_BUTTON = ".Calendar__monthArrowWrapper.-left"
+    TRACKING_SYSTEM_APP = "//div[@class='dropMenu__content js-drop-content']//p[@class='dropMenu__title'][normalize-space()='Tracking System']"
+    ALL_CARRIERS_SELECTOR = "[data-test-id='all-carriers-button']"
+    SHIPMENT_TYPE_SELECTOR = ".react-select__single-value"
+    SHIPMENT_TYPE_AIR = "span.unified-tracking-WlIlED:has-text('Air')"
+    SHIPMENT_TYPE_RAIL = "span.unified-tracking-WlIlED:has-text('Rail')"
+    SHIPMENT_TYPE_ROAD = "span.unified-tracking-WlIlED:has-text('Road')"
+    SHIPMENT_TYPE_PARCEL = "span.unified-tracking-WlIlED:has-text('Parcel')"
 
     HS_CODE_REQUEST = ".a3RkC"
 
