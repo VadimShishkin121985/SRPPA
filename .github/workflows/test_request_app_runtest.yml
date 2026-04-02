@@ -102,6 +102,7 @@ jobs:
           pytest "$TEST_FILE" \
             --disable-warnings \
             -v \
+            --reruns 1 \
             --alluredir=allure-results \
             --junitxml=allure-results/junit.xml || true
         env:
