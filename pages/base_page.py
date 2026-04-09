@@ -70,3 +70,15 @@ class BasePage:
         self.page.mouse.move(safe_x, safe_y)
 
         self.page.wait_for_timeout(50)
+
+    def get_random_imo_number(self) -> str:
+        numbers_str = os.getenv("TEST_IMO_NUMBER", "")
+        numbers = [n.strip() for n in numbers_str.split(",") if n.strip()]
+
+        if not numbers:
+            raise RuntimeError(
+                "TEST_IMO_NUMBER is empty or not set. "
+                "Expected comma-separated tracking numbers."
+            )
+
+        return random.choice(numbers)

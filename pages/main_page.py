@@ -68,5 +68,18 @@ class MainPage(BasePage, LocatorsPage):
     def go_to_air_tracking(self):
         self.page.locator(self.MENU_TOOLS).hover()
 
-        pass
+    def go_to_vessel_tracking_app_with_aut(self):
+        self.click_on_sign_in_button()
+        SignInPage(self.page).sign_in_form()
+        self.go_to_vessel_tracking_app()
+
+    def go_to_vessel_tracking_app(self):
+        page = self.page
+        tools = page.locator(self.MENU_TOOLS)
+        expect(tools).to_be_visible(timeout=10000)
+        tools.hover()
+        self._safe_click(self.VESSEL_TRACKING_APP, timeout=30000)
+        expect(
+            page.locator(self.INPUT_VESSEL_TRACKING)
+        ).to_be_visible(timeout=15000)
 

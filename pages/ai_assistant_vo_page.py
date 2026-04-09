@@ -1,3 +1,5 @@
+from time import sleep
+
 from pages.base_page import BasePage
 from pages.locator_page import LocatorsPage
 from playwright.sync_api import expect
@@ -13,11 +15,13 @@ class AIAssistant(LocatorsPage, BasePage):
         btn = self.page.locator(self.CT_QUICK_BUTTON)
         expect(btn).to_be_visible(timeout=30000)
         btn.click()
+        sleep(5)
         expect(
             self.page.get_by_text("Please provide a valid container number for tracking. "
                                   "Container numbers are typically 10-11 characters like MSCU1234567. "
                                   "You can track containers at")
         ).to_be_visible(timeout=30000)
+
 
     def check_dt_default_question(self):
         btn = self.page.locator(self.DT_QUICK_BUTTON)

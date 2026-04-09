@@ -63,6 +63,7 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
 
     def click_search_button_ct_app(self):
         self.page.click(self.SEARCH_BUTTON_CT)
+        sleep(5)
         expect(self.page.locator(self.ROUTE_BUTTON)).to_be_visible(timeout=500000)
 
     def click_on_follow_button(self):
@@ -377,9 +378,12 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         expect(self.page.locator("[data-test-id='request-it-quote-link']")).to_be_visible(timeout=10000)
 
     def go_to_road_tracking_card(self):
-        self.go_to_rail_tracking_app()
+        self.go_to_road_tracking_app()
+        sleep(2)
         self.page.fill(self.INPUT_CT_APP, "20260200102")
+        sleep(2)
         self.click_search_button_ct_app()
+        sleep(2)
 
     def go_to_parcel_tracking_app(self):
         shipment_type = self.page.locator(self.SHIPMENT_TYPE_SELECTOR)
@@ -396,10 +400,87 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         self.page.click(self.SEARCH_BUTTON_CT)
         expect(self.page.locator(".unified-tracking-Q6J32l")).to_be_visible(timeout=500000)
 
+    def go_to_card_by_vessel_name(self):
+        self.page.locator(self.INPUT_VESSEL_TRACKING).click()
+        self.page.type(self.INPUT_VESSEL_TRACKING, "CMA CGM")
+        sleep(3)
+        self.page.press(self.INPUT_VESSEL_TRACKING, "Enter")
+        self.page.locator(self.SEARCH_VESSEL_TRACKING).click()
+        expect(self.page.locator("[data-test-id='vt-openedCard-vessel-tab']")).to_be_visible(timeout=100000)
 
+    def go_to_card_by_imo_number(self):
+        self.number = self.get_random_imo_number()
+        self.page.locator(self.INPUT_VESSEL_TRACKING).click()
+        self.page.type(self.INPUT_VESSEL_TRACKING, self.number)
+        sleep(3)
+        self.page.press(self.INPUT_VESSEL_TRACKING, "Enter")
+        self.page.locator(self.SEARCH_VESSEL_TRACKING).click()
+        expect(self.page.locator("[data-test-id='vt-openedCard-vessel-tab']")).to_be_visible(timeout=100000)
+        print(f"IMO_number: {self.number}")
 
+    def check_counter_paid_user(self):
+        self.page.click(self.SUBSCRIPTION_VT_BUTTON)
+        counter_before_text = self.page.locator(self.CREDITS_USED_VESSEL_TRACKING).inner_text().strip()
+        print(f"📊 Кредитів ДО пошуку: {counter_before_text}")
 
+        # Витягуємо число
+        counter_before = int(re.search(r"\d+", counter_before_text).group())
 
+        # Виконуємо пошук
+        self.go_to_card_by_imo_number()
+
+        # Перезавантажуємо сторінку
+        self.page.reload()
+        sleep(2)
+
+        # Відкриваємо інфо про підписку
+        self.page.click(self.SUBSCRIPTION_VT_BUTTON)
+        sleep(2)
+
+        # Зчитуємо значення ПІСЛЯ пошуку
+        counter_after_text = self.page.locator(self.CREDITS_USED_VESSEL_TRACKING).inner_text().strip()
+        print(f"📊 Кредитів ПІСЛЯ пошуку: {counter_after_text}")
+
+        # Витягуємо число
+        counter_after = int(re.search(r"\d+", counter_after_text).group())
+
+        # Перевіряємо, що лічильник змінився
+        assert counter_after > counter_before, (
+            f"Лічильник кредитів не збільшився: "
+            f"було {counter_before}, стало {counter_after}"
+        )
+
+    def copy_link_vessel_tracking(self):
+        try:
+            self.go_to_card_by_imo_number()
+
+            # клик по кнопке "Copy link"
+            self.page.locator(self.COPY_LINK_VESSEL_TRACKING).click()
+
+            # берём ссылку (лучше НЕ через clipboard, но оставим твой вариант)
+            link = self.page.evaluate("navigator.clipboard.readText()")
+
+            if not link:
+                raise ValueError("❌ Link was not copied")
+
+            # открываем новую вкладку
+            new_page = self.page.context.new_page()
+            new_page.goto(link, timeout=30000)
+
+            sleep(5)
+
+            # ✅ проверка что нужный элемент есть на странице
+            locator = new_page.locator(self.SCHEDULE_TAB_VESSEL_TRACKING)
+
+            locator.wait_for(state="visible", timeout=100000)
+
+            print("✅ Vessel tracking page opened successfully")
+
+            return new_page
+
+        except Exception as e:
+            print(f"❌ Failed to open vessel tracking page: {e}")
+            raise
 
 
 

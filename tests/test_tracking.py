@@ -114,6 +114,7 @@ class Test_Tracking:
         pages["ct"].go_to_map_tab()
 
 
+
     def test_air_tracking_app(self, pages):
         pages["main"].go_to_ts_app_with_aut()
         pages["ct"].go_to_air_tracking()
@@ -145,3 +146,25 @@ class Test_Tracking:
     def test_find_parcel_tracking_number(self, pages):
         pages["main"].go_to_ts_app_with_aut()
         pages["ct"].go_to_parcel_tracking_card()
+
+
+
+
+    def test_go_to_vessel_tracking_app(self, pages):
+        pages["main"].go_to_vessel_tracking_app_with_aut()
+
+    def test_go_to_card_by_vessel_name(self, pages):
+        pages["main"].go_to_vessel_tracking_app_with_aut()
+        pages["ct"].go_to_card_by_vessel_name()
+
+    def test_go_to_card_by_imo_number(self, pages):
+        pages["main"].go_to_vessel_tracking_app_with_aut()
+        pages["ct"].go_to_card_by_imo_number()
+
+    def test_check_counter_for_paid_user(self, pages):
+        pages["main"].go_to_vessel_tracking_app_with_aut()
+        pages["ct"].check_counter_paid_user()
+
+    def test_copy_link_vessel_tracking_app(self, pages):
+        pages["main"].go_to_vessel_tracking_app_with_aut()
+        pages["ct"].copy_link_vessel_tracking()
