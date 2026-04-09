@@ -122,6 +122,7 @@ jobs:
           TEST_ACCOUNT_LOGIN: ${{ secrets.TEST_ACCOUNT_LOGIN }}
           TEST_ACCOUNT_PASSWORD: ${{ secrets.TEST_ACCOUNT_PASSWORD }}
           TEST_CT_NUMBER: ${{ secrets.TEST_CT_NUMBER }}
+          TEST_IMO_NUMBER: ${{ secrets.TEST_IMO_NUMBER }}
 
       - name: Upload screenshots
         if: always()
