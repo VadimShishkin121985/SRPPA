@@ -410,6 +410,7 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
 
     def go_to_card_by_imo_number(self):
         self.number = self.get_random_imo_number()
+        self.prepare_for_hover()
         self.page.locator(self.INPUT_VESSEL_TRACKING).click()
         self.page.type(self.INPUT_VESSEL_TRACKING, self.number)
         sleep(3)
@@ -419,6 +420,7 @@ class ContainerTrackingPage(BasePage, LocatorsPage):
         print(f"IMO_number: {self.number}")
 
     def check_counter_paid_user(self):
+        self.prepare_for_hover()
         self.page.click(self.SUBSCRIPTION_VT_BUTTON)
         counter_before_text = self.page.locator(self.CREDITS_USED_VESSEL_TRACKING).inner_text().strip()
         print(f"📊 Кредитів ДО пошуку: {counter_before_text}")
