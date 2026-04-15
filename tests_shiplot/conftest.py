@@ -1,0 +1,87 @@
+import datetime
+import os
+
+import pytest
+from playwright.sync_api import sync_playwright
+
+from pages_shiplot.maine_page_shiplot import MainPage_Shiplot
+
+
+BASE_URL = "https://ex.shiplot.com/"  # замени на свой URL
+
+# ----------------------------
+# Фикстура чистой страницы
+# ----------------------------
+@pytest.fixture(scope="function")
+def page():
+    """
+    Каждый тест:
+    - стартует новый браузер
+    - создаёт новый контекст
+    - создаёт новую страницу
+    - закрывает браузер после теста
+    """
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-dev-shm-usage",
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-blink-features=AutomationControlled"
+            ]
+        )
+
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
+            viewport={"width": 1700, "height": 1080},
+            permissions = ["clipboard-read", "clipboard-write"]
+        )
+        page = context.new_page()
+
+        page.goto(BASE_URL, wait_until="load", timeout=60000)
+
+        yield page  # тест получает объект page
+
+        # закрытие ресурсов после теста
+        context.close()
+        browser.close()
+
+# ----------------------------
+# Фикстура Page Objects
+# ----------------------------
+@pytest.fixture
+def pages(page):
+    """
+    Возвращает словарь с готовыми Page Objects для теста.
+    Пример использования:
+        pages["main"].click_on_sign_in_button()
+        pages["signin"].sign_in_form()
+        pages["ct"].update_button_click()
+    """
+    return {
+        "main_shiplot": MainPage_Shiplot(page),
+
+    }
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    rep = outcome.get_result()
+
+    if rep.when == "call" and rep.failed:
+        page = item.funcargs.get("page")
+
+        if page:
+            os.makedirs("screenshots", exist_ok=True)
+
+            try:
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            except Exception:
+                timestamp = "no_time"
+
+            file_name = f"screenshots/{item.name}_{timestamp}.png"
+
+            page.screenshot(
+                path=file_name,
+                full_page=False
+            )
