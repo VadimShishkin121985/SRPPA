@@ -30,8 +30,7 @@ class MainPage_Shiplot(BasePage):
         sleep(3)
         self.page.locator(self.MENU_SERVICES).click()
         expect(
-            self.page.get_by_text(" a dedicated container for your cargo, offering maximum speed, "
-                                  "security, and cost efficiency for larger shipments.")
+            self.page.get_by_text("Ocean Freight")
         ).to_be_visible(timeout=30000)
 
     def hover_menu_tools_ex(self):
@@ -162,7 +161,7 @@ class MainPage_Shiplot(BasePage):
         expect(footer).to_be_visible()
         self.page.locator("//footer//a[normalize-space()='Services']").click()
         expect(
-            self.page.get_by_text(" a dedicated container for your cargo, offering maximum speed, "
+            self.page.get_by_text("a dedicated container for your cargo, offering maximum speed, "
                                   "security, and cost efficiency for larger shipments.")
         ).to_be_visible(timeout=30000)
 
