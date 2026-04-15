@@ -27,6 +27,7 @@ class MainPage_Shiplot(BasePage):
 
 
     def go_to_services_page_ex(self):
+        sleep(3)
         self.page.locator(self.MENU_SERVICES).click()
         expect(
             self.page.get_by_text(" a dedicated container for your cargo, offering maximum speed, "
@@ -151,6 +152,7 @@ class MainPage_Shiplot(BasePage):
         expect(self.page.locator("h2").first).to_contain_text("Contact Information", timeout=30000)
 
     def go_to_sign_in_ex(self):
+        sleep(2)
         self.page.locator(self.SIGN_IN_EX).click()
         expect(self.page.locator("h4").first).to_contain_text("Welcome!", timeout=30000)
 
