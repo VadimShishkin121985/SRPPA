@@ -27,10 +27,17 @@ class MainPage_Shiplot(BasePage):
 
 
     def go_to_services_page_ex(self):
-        sleep(3)
+        with self.page.expect_popup() as popup_info:
+            self.page.locator(self.MENU_SERVICES).click()
+
+        new_page = popup_info.value
+        new_page.wait_for_load_state("domcontentloaded")
+        self.page = new_page
+        self.page.locator(self.MENU_SERVICES).wait_for(state="visible")
         self.page.locator(self.MENU_SERVICES).click()
+
         expect(
-            self.page.get_by_text("Ocean Freight")
+            self.page.get_by_role("heading", name="Ocean Freight")
         ).to_be_visible(timeout=30000)
 
     def hover_menu_tools_ex(self):
