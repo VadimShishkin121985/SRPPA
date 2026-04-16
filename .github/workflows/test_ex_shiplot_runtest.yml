@@ -10,7 +10,7 @@ name: Test Ex.Shiplot
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 9 * * *'
   workflow_dispatch:
     inputs:
       test_suite:
@@ -18,9 +18,9 @@ on:
         required: true
         type: choice
         options:
-          - Tracking
+          - ExShiplot
           - Regression
-        default: Tracking
+        default: ExShiplot
       test_target:
         description: 'Optional: tests_shiplot/test_file.py::TestClass::test_name'
         required: false
